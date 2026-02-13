@@ -38,10 +38,12 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    mysql -u root -p party_manager < database.sql
    ```
    
-   **For existing installations**: If you already have the database set up, run the migration script to add the new time and location fields:
+   **Alternative: Use the database reset script** (drops and recreates the database):
    ```bash
-   mysql -u root -p party_manager < migration_add_time_location.sql
+   php reset_database.php
    ```
+   
+   This is useful for resetting the database to a clean state with the latest schema.
 
 4. Configure the database connection:
    - Open `config.php`
@@ -109,6 +111,7 @@ Each invitation link contains:
 ```
 ├── config.php              # Database configuration and utility functions
 ├── database.sql            # Database schema
+├── reset_database.php      # Console command to reset/recreate database
 ├── register.php            # User registration page
 ├── login.php              # User login page
 ├── logout.php             # Logout functionality
@@ -120,6 +123,31 @@ Each invitation link contains:
 ├── style.css              # Application styles
 └── README.md              # This file
 ```
+
+## Database Management
+
+### Resetting the Database
+
+To reset the database and recreate it with the latest schema, use the provided console command:
+
+```bash
+php reset_database.php
+```
+
+This script will:
+- Drop the existing database (if it exists)
+- Create a new database
+- Execute all statements from `database.sql`
+- Verify the tables were created successfully
+
+**Warning**: This will delete all existing data! The script will ask for confirmation before proceeding.
+
+You can also manually reset the database:
+```bash
+mysql -u root -p -e "DROP DATABASE IF EXISTS party_manager; CREATE DATABASE party_manager;"
+mysql -u root -p party_manager < database.sql
+```
+
 
 ## Security Features
 
