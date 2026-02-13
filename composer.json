@@ -9,6 +9,6 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "vlucas/phpdotenv": "*"
+        "vlucas/phpdotenv": "^5.0"
     }
 }
