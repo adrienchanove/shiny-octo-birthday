@@ -12,6 +12,13 @@
 // Load configuration
 require_once __DIR__ . '/config.php';
 
+// Only accessible from console
+if (isset($_SERVER['REQUEST_METHOD'])) {
+    die();
+    return;
+}
+
+
 echo "================================\n";
 echo "Database Reset Script\n";
 echo "================================\n\n";
@@ -70,8 +77,7 @@ try {
         ),
         function($stmt) {
             // Filter out empty statements and comment-only statements
-            return !empty($stmt) && 
-                   !preg_match('/^--/', $stmt) && 
+            return !empty($stmt) &&
                    !preg_match('/^\/\*/', $stmt) &&
                    strtoupper(substr($stmt, 0, 3)) !== 'USE';
         }
