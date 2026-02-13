@@ -136,11 +136,12 @@ if (!$project_id || !$invitation_code) {
             $og_description = htmlspecialchars($invitation['description']);
         } else {
             $event_date_timestamp = strtotime($invitation['event_date']);
+            // Escape the title before concatenation to prevent XSS
             $fallback_desc = 'Join us for ' . htmlspecialchars($invitation['title']);
             if ($event_date_timestamp !== false) {
                 $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
             }
-            // $fallback_desc already has the title escaped, so we don't double-escape
+            // Title portion was already escaped above, safe to use directly
             $og_description = $fallback_desc;
         }
     ?>
