@@ -1,6 +1,9 @@
 <?php
 require_once 'config.php';
 
+// Set French locale for date formatting
+setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+
 // Handle both GET (link) and POST (manual entry form)
 $project_id = isset($_GET['project']) ? intval($_GET['project']) : 0;
 $invitation_code = isset($_GET['code']) ? $_GET['code'] : '';
@@ -138,7 +141,6 @@ if (!$project_id || !$invitation_code) {
             $event_date_timestamp = strtotime($invitation['event_date']);
             $fallback_desc = 'Rejoignez-nous pour ' . $invitation['title'];
             if ($event_date_timestamp !== false) {
-                setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                 $fallback_desc .= ' le ' . strftime('%e %B %Y', $event_date_timestamp);
             }
             $og_description = $fallback_desc;
@@ -227,7 +229,6 @@ if (!$project_id || !$invitation_code) {
                     <div class="invitation-info">
                         <p><strong>Hôte :</strong> <?php echo htmlspecialchars($invitation['host_username']); ?></p>
                         <p><strong>Date :</strong> <?php 
-                            setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                             echo strftime('%e %B %Y', strtotime($invitation['event_date'])); 
                         ?></p>
                         <?php if (!empty($invitation['event_time'])): ?>
@@ -235,7 +236,6 @@ if (!$project_id || !$invitation_code) {
                         <?php endif; ?>
                         <?php if (!empty($invitation['event_end_date'])): ?>
                             <p><strong>Date de fin :</strong> <?php 
-                                setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                                 echo strftime('%e %B %Y', strtotime($invitation['event_end_date'])); 
                             ?></p>
                         <?php endif; ?>

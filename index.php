@@ -2,6 +2,9 @@
 require_once 'config.php';
 requireLogin();
 
+// Set French locale for date formatting
+setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+
 $conn = getDBConnection();
 
 // Get user's projects
@@ -52,7 +55,6 @@ $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <p class="project-description"><?php echo htmlspecialchars($project['description']); ?></p>
                         <p class="project-date">
                             <strong>Date:</strong> <?php 
-                                setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                                 echo strftime('%e %B %Y', strtotime($project['event_date'])); 
                             ?>
                         </p>

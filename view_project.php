@@ -2,6 +2,9 @@
 require_once 'config.php';
 requireLogin();
 
+// Set French locale for date formatting
+setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+
 $project_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if (!$project_id) {
@@ -95,7 +98,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             <div class="project-info">
                 <p><strong>Date de l'événement :</strong> <?php 
-                    setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                     echo strftime('%e %B %Y', strtotime($project['event_date'])); 
                 ?></p>
                 <?php if (!empty($project['event_time'])): ?>
@@ -103,7 +105,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endif; ?>
                 <?php if (!empty($project['event_end_date'])): ?>
                     <p><strong>Date de fin :</strong> <?php 
-                        setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                         echo strftime('%e %B %Y', strtotime($project['event_end_date'])); 
                     ?></p>
                 <?php endif; ?>
@@ -116,7 +117,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <p><strong>Description :</strong> <?php echo htmlspecialchars($project['description']); ?></p>
                 <p><strong>Liste des invités visible par les invités acceptés :</strong> <?php echo $project['show_guest_list'] ? 'Oui' : 'Non'; ?></p>
                 <p><strong>Créé le :</strong> <?php 
-                    setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                     echo strftime('%e %B %Y', strtotime($project['created_at'])); 
                 ?></p>
             </div>
@@ -174,7 +174,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <button class="btn btn-small" onclick="copyLink(this)">Copier</button>
                                     </td>
                                     <td><?php 
-                                        setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
                                         echo strftime('%e %b %Y', strtotime($invitation['created_at'])); 
                                     ?></td>
                                 </tr>
