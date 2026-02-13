@@ -46,7 +46,20 @@ function getCurrentUserId() {
 }
 
 // Generate random invitation code
+// Format: XXXX-XXXX-XXXX (3 sequences of 4 uppercase alphanumeric chars)
 function generateInvitationCode() {
-    return bin2hex(random_bytes(32));
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $code = '';
+    
+    for ($i = 0; $i < 3; $i++) {
+        if ($i > 0) {
+            $code .= '-';
+        }
+        for ($j = 0; $j < 4; $j++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+    }
+    
+    return $code;
 }
 ?>

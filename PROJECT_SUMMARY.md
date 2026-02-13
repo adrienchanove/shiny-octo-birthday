@@ -52,7 +52,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 
 ### 3. Invitation System
 ✅ Generate unique invitation links per guest
-✅ 64-character cryptographically secure invitation codes
+✅ Invitation codes in format: XXXX-XXXX-XXXX (uppercase alphanumeric)
 ✅ Personal invitation links format: `?project=ID&code=CODE`
 ✅ Track invitee name and email (optional)
 ✅ Public invitation acceptance page
@@ -97,7 +97,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 
 ### Invitations Table
 - Foreign key to projects (CASCADE delete)
-- Unique 64-character invitation codes
+- Unique invitation codes (format: XXXX-XXXX-XXXX)
 - Optional invitee name/email
 - Status ENUM (pending/accepted/declined)
 - Acceptance timestamp
@@ -109,7 +109,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 2. **XSS Prevention**: All output escaped with htmlspecialchars()
 3. **Password Security**: Bcrypt hashing with minimum 8 characters
 4. **Session Security**: Proper session start/destroy, authentication checks
-5. **Invitation Security**: Cryptographically secure 64-char codes
+5. **Invitation Security**: Cryptographically secure codes (XXXX-XXXX-XXXX format)
 6. **Error Handling**: Generic messages to users, detailed logs server-side
 7. **Access Control**: Authentication required, ownership verification
 

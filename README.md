@@ -82,12 +82,12 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 
 ### Invitation Link Format
 ```
-http://your-domain.com/accept_invitation.php?project=1&code=abc123def456...
+http://your-domain.com/accept_invitation.php?project=1&code=ABCD-EFGH-IJKL
 ```
 
 Each invitation link contains:
 - `project`: The project ID
-- `code`: A unique 64-character invitation code
+- `code`: A unique invitation code (format: XXXX-XXXX-XXXX, uppercase alphanumeric)
 
 ### Accepting an Invitation
 1. Guest clicks on the invitation link
@@ -141,7 +141,7 @@ Each invitation link contains:
 ### Invitations Table
 - `id`: Primary key
 - `project_id`: Foreign key to projects table
-- `invitation_code`: Unique 64-character code
+- `invitation_code`: Unique code (format: XXXX-XXXX-XXXX)
 - `invitee_name`: Name of the invitee
 - `invitee_email`: Email of the invitee
 - `status`: 'pending', 'accepted', or 'declined'

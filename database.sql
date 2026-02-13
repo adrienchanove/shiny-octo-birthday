@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS projects (
 CREATE TABLE IF NOT EXISTS invitations (
     id INT AUTO_INCREMENT PRIMARY KEY,
     project_id INT NOT NULL,
-    invitation_code VARCHAR(64) UNIQUE NOT NULL,
+    invitation_code VARCHAR(14) UNIQUE NOT NULL,
     invitee_name VARCHAR(100),
     invitee_email VARCHAR(100),
     status ENUM('pending', 'accepted', 'declined') DEFAULT 'pending',

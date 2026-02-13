@@ -67,10 +67,10 @@
           ▼
     ┌─────────────────────────────────────────┐
     │  Invitation Code Generation:            │
-    │  bin2hex(random_bytes(32))              │
-    │  = 64-character hexadecimal string      │
+    │  Format: XXXX-XXXX-XXXX                 │
+    │  (uppercase alphanumeric)               │
     │  Example:                                │
-    │  7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c...    │
+    │  AB3X-9KL2-P7Q4                         │
     └────────────┬────────────────────────────┘
                  │
                  ▼
@@ -78,7 +78,7 @@
 │                    INVITATION LINK CREATED                          │
 │  http://yoursite.com/accept_invitation.php                         │
 │         ?project=123                                                │
-│         &code=7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d...  │
+│         &code=AB3X-9KL2-P7Q4                                        │
 │                                                                     │
 │  [Copy Link] ───► Copy to clipboard                                │
 └─────────┬───────────────────────────────────────────────────────────┘
@@ -160,11 +160,23 @@
 ### 1. Invitation Code Generation
 ```php
 function generateInvitationCode() {
-    return bin2hex(random_bytes(32));
+    $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    $code = '';
+    
+    for ($i = 0; $i < 3; $i++) {
+        if ($i > 0) {
+            $code .= '-';
+        }
+        for ($j = 0; $j < 4; $j++) {
+            $code .= $characters[random_int(0, strlen($characters) - 1)];
+        }
+    }
+    
+    return $code;
 }
 ```
-- Uses cryptographically secure random bytes
-- Generates 64-character hexadecimal string
+- Uses cryptographically secure random_int()
+- Generates code in format: XXXX-XXXX-XXXX (uppercase alphanumeric)
 - Guaranteed unique by database constraint
 
 ### 2. Invitation Link Format
@@ -174,7 +186,7 @@ http://domain.com/accept_invitation.php?project={ID}&code={CODE}
 Example:
 http://localhost/accept_invitation.php
   ?project=1
-  &code=7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8
+  &code=AB3X-9KL2-P7Q4
 ```
 
 ### 3. Database Flow
@@ -204,8 +216,8 @@ users
 
 ## Security Features in Invitation System
 
-1. **Unique Codes**: Each invitation has a cryptographically secure 64-char code
-2. **No Enumeration**: Can't guess codes (2^256 possibilities)
+1. **Unique Codes**: Each invitation has a cryptographically secure code (format: XXXX-XXXX-XXXX)
+2. **No Enumeration**: Can't easily guess codes (36^12 = ~4.7 quadrillion possibilities)
 3. **Single Use Intent**: While technically reusable, status is tracked
 4. **Public Access**: No account needed to accept (user-friendly)
 5. **Ownership Verification**: Only project owner can create invitations

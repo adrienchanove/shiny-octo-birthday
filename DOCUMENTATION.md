@@ -80,7 +80,7 @@ View Event Details → Accept/Decline → Status Updated
 - Fields:
   - Invitee Name (optional)
   - Invitee Email (optional)
-- Generates unique 64-character invitation code
+- Generates unique invitation code (format: XXXX-XXXX-XXXX)
 - Requires authentication and ownership verification
 
 **accept_invitation.php** (Public Page)
@@ -126,7 +126,7 @@ View Event Details → Accept/Decline → Status Updated
 **invitations**
 - id (Primary Key)
 - project_id (Foreign Key → projects.id)
-- invitation_code (Unique, 64 chars)
+- invitation_code (Unique, format: XXXX-XXXX-XXXX)
 - invitee_name
 - invitee_email
 - status (pending|accepted|declined)
@@ -150,8 +150,8 @@ View Event Details → Accept/Decline → Status Updated
    - Proper session cleanup on logout
 
 4. **Invitation Security**
-   - 64-character cryptographically secure codes
-   - Generated with random_bytes(32) and hex encoding
+   - Invitation codes in format: XXXX-XXXX-XXXX (uppercase alphanumeric)
+   - Generated with cryptographically secure random_int()
    - Unique constraint in database
 
 5. **XSS Prevention**
