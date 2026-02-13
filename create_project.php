@@ -12,13 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_time = !empty($_POST['event_time']) ? $_POST['event_time'] : null;
     $event_end_date = !empty($_POST['event_end_date']) ? $_POST['event_end_date'] : null;
     $event_end_time = !empty($_POST['event_end_time']) ? $_POST['event_end_time'] : null;
-    $event_location = trim($_POST['event_location']);
+    $event_location = !empty(trim($_POST['event_location'])) ? trim($_POST['event_location']) : null;
     $event_type = $_POST['event_type'];
     
     if (empty($title) || empty($event_date) || empty($event_type)) {
         $error = 'Title, date, and event type are required.';
     } elseif (!in_array($event_type, ['party', 'birthday'])) {
         $error = 'Invalid event type.';
+    } elseif (!empty($event_end_date) && $event_end_date < $event_date) {
+        $error = 'Event end date cannot be before event start date.';
     } else {
         try {
             $conn = getDBConnection();
