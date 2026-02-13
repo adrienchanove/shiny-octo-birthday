@@ -131,16 +131,36 @@ if (!$project_id || !$invitation_code) {
     <?php if (isset($invitation)): ?>
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
-    <meta property="og:description" content="<?php echo htmlspecialchars($invitation['description'] ?: 'Join us for ' . $invitation['title'] . ' on ' . date('F j, Y', strtotime($invitation['event_date']))); ?>">
+    <?php 
+        $event_date_timestamp = strtotime($invitation['event_date']);
+        $fallback_desc = 'Join us for ' . htmlspecialchars($invitation['title']);
+        if ($event_date_timestamp !== false) {
+            $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
+        }
+        $og_description = !empty($invitation['description']) ? htmlspecialchars($invitation['description']) : $fallback_desc;
+    ?>
+    <meta property="og:description" content="<?php echo $og_description; ?>">
     <meta property="og:type" content="event">
-    <meta property="og:url" content="<?php echo SITE_URL; ?>/accept_invitation.php?project=<?php echo $project_id; ?>&code=<?php echo htmlspecialchars($invitation_code); ?>">
+    <meta property="og:url" content="<?php echo htmlspecialchars(SITE_URL . '/accept_invitation.php?project=' . $project_id . '&code=' . $invitation_code); ?>">
     <meta property="og:site_name" content="Party Manager">
     
     <!-- Event Specific Open Graph Tags -->
-    <meta property="event:start_time" content="<?php echo date('c', strtotime($invitation['event_date'] . ' ' . ($invitation['event_time'] ?: '00:00:00'))); ?>">
-    <?php if (!empty($invitation['event_end_date'])): ?>
-    <meta property="event:end_time" content="<?php echo date('c', strtotime($invitation['event_end_date'] . ' ' . ($invitation['event_end_time'] ?: '23:59:59'))); ?>">
+    <?php 
+        $start_timestamp = strtotime($invitation['event_date'] . ' ' . ($invitation['event_time'] ?: '00:00:00'));
+        if ($start_timestamp !== false): 
+    ?>
+    <meta property="event:start_time" content="<?php echo date('c', $start_timestamp); ?>">
     <?php endif; ?>
+    <?php 
+        if (!empty($invitation['event_end_date'])):
+            $end_timestamp = strtotime($invitation['event_end_date'] . ' ' . ($invitation['event_end_time'] ?: '23:59:59'));
+            if ($end_timestamp !== false):
+    ?>
+    <meta property="event:end_time" content="<?php echo date('c', $end_timestamp); ?>">
+    <?php 
+            endif;
+        endif; 
+    ?>
     <?php if (!empty($invitation['event_location'])): ?>
     <meta property="event:location" content="<?php echo htmlspecialchars($invitation['event_location']); ?>">
     <?php endif; ?>
@@ -148,7 +168,7 @@ if (!$project_id || !$invitation_code) {
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
-    <meta name="twitter:description" content="<?php echo htmlspecialchars($invitation['description'] ?: 'Join us for ' . $invitation['title'] . ' on ' . date('F j, Y', strtotime($invitation['event_date']))); ?>">
+    <meta name="twitter:description" content="<?php echo $og_description; ?>">
     <?php endif; ?>
     
     <link rel="stylesheet" href="style.css">
