@@ -132,12 +132,16 @@ if (!$project_id || !$invitation_code) {
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
     <?php 
-        $event_date_timestamp = strtotime($invitation['event_date']);
-        $fallback_desc = 'Join us for ' . htmlspecialchars($invitation['title']);
-        if ($event_date_timestamp !== false) {
-            $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
+        if (!empty($invitation['description'])) {
+            $og_description = htmlspecialchars($invitation['description']);
+        } else {
+            $event_date_timestamp = strtotime($invitation['event_date']);
+            $fallback_desc = 'Join us for ' . $invitation['title'];
+            if ($event_date_timestamp !== false) {
+                $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
+            }
+            $og_description = htmlspecialchars($fallback_desc);
         }
-        $og_description = !empty($invitation['description']) ? htmlspecialchars($invitation['description']) : $fallback_desc;
     ?>
     <meta property="og:description" content="<?php echo $og_description; ?>">
     <meta property="og:type" content="event">
