@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS projects (
     title VARCHAR(255) NOT NULL,
     description TEXT,
     event_date DATE,
+    event_time TIME,
+    event_end_date DATE,
+    event_end_time TIME,
+    event_location VARCHAR(255),
     event_type ENUM('party', 'birthday') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE

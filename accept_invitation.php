@@ -13,7 +13,7 @@ if (!$project_id || !$invitation_code) {
     
     // Get invitation details
     $stmt = $conn->prepare("
-        SELECT i.*, p.title, p.description, p.event_date, p.event_type, u.username as host_username
+        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
         FROM invitations i
         JOIN projects p ON i.project_id = p.id
         JOIN users u ON p.user_id = u.id
@@ -37,7 +37,7 @@ if (!$project_id || !$invitation_code) {
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
-                        SELECT i.*, p.title, p.description, p.event_date, p.event_type, u.username as host_username
+                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
                         FROM invitations i
                         JOIN projects p ON i.project_id = p.id
                         JOIN users u ON p.user_id = u.id
@@ -56,7 +56,7 @@ if (!$project_id || !$invitation_code) {
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
-                        SELECT i.*, p.title, p.description, p.event_date, p.event_type, u.username as host_username
+                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
                         FROM invitations i
                         JOIN projects p ON i.project_id = p.id
                         JOIN users u ON p.user_id = u.id
@@ -102,6 +102,18 @@ if (!$project_id || !$invitation_code) {
                     <div class="invitation-info">
                         <p><strong>Host:</strong> <?php echo htmlspecialchars($invitation['host_username']); ?></p>
                         <p><strong>Date:</strong> <?php echo date('F j, Y', strtotime($invitation['event_date'])); ?></p>
+                        <?php if (!empty($invitation['event_time'])): ?>
+                            <p><strong>Time:</strong> <?php echo date('g:i A', strtotime($invitation['event_time'])); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($invitation['event_end_date'])): ?>
+                            <p><strong>End Date:</strong> <?php echo date('F j, Y', strtotime($invitation['event_end_date'])); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($invitation['event_end_time'])): ?>
+                            <p><strong>End Time:</strong> <?php echo date('g:i A', strtotime($invitation['event_end_time'])); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($invitation['event_location'])): ?>
+                            <p><strong>Location:</strong> <?php echo htmlspecialchars($invitation['event_location']); ?></p>
+                        <?php endif; ?>
                         <?php if (!empty($invitation['description'])): ?>
                             <p><strong>Description:</strong> <?php echo htmlspecialchars($invitation['description']); ?></p>
                         <?php endif; ?>
