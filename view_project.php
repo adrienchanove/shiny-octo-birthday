@@ -2,6 +2,9 @@
 require_once 'config.php';
 requireLogin();
 
+// Set French locale for date formatting
+setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+
 $project_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if (!$project_id) {
@@ -27,18 +30,18 @@ $stmt->execute([$project_id]);
 $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($project['title']); ?> - Party Manager</title>
+    <title><?php echo htmlspecialchars($project['title']); ?> - Gestionnaire de Fêtes</title>
     
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="<?php echo htmlspecialchars($project['title']); ?>">
     <meta property="og:description" content="<?php echo htmlspecialchars($project['description']); ?>">
     <meta property="og:type" content="event">
     <meta property="og:url" content="<?php echo htmlspecialchars(SITE_URL . '/view_project.php?id=' . $project_id); ?>">
-    <meta property="og:site_name" content="Party Manager">
+    <meta property="og:site_name" content="Gestionnaire de Fêtes">
     
     <!-- Event Specific Open Graph Tags -->
     <?php 
@@ -71,12 +74,12 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <body>
     <nav class="navbar">
         <div class="container">
-            <h1 class="logo">Party Manager</h1>
+            <h1 class="logo">Gestionnaire de Fêtes</h1>
             <div class="nav-links">
-                <a href="index.php">My Projects</a>
-                <a href="create_project.php">Create Project</a>
-                <span class="user-info">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
-                <a href="logout.php">Logout</a>
+                <a href="index.php">Mes Projets</a>
+                <a href="create_project.php">Créer un Projet</a>
+                <span class="user-info">Bienvenue, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                <a href="logout.php">Déconnexion</a>
             </div>
         </div>
     </nav>
@@ -86,44 +89,53 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="project-header">
                 <h2><?php echo htmlspecialchars($project['title']); ?></h2>
                 <span class="badge <?php echo htmlspecialchars($project['event_type']); ?>">
-                    <?php echo ucfirst(htmlspecialchars($project['event_type'])); ?>
+                    <?php 
+                        $type = htmlspecialchars($project['event_type']);
+                        echo $type === 'party' ? 'Fête' : 'Anniversaire';
+                    ?>
                 </span>
             </div>
             
             <div class="project-info">
-                <p><strong>Event Date:</strong> <?php echo date('F j, Y', strtotime($project['event_date'])); ?></p>
+                <p><strong>Date de l'événement :</strong> <?php 
+                    echo strftime('%e %B %Y', strtotime($project['event_date'])); 
+                ?></p>
                 <?php if (!empty($project['event_time'])): ?>
-                    <p><strong>Event Time:</strong> <?php echo date('g:i A', strtotime($project['event_time'])); ?></p>
+                    <p><strong>Heure de l'événement :</strong> <?php echo date('H:i', strtotime($project['event_time'])); ?></p>
                 <?php endif; ?>
                 <?php if (!empty($project['event_end_date'])): ?>
-                    <p><strong>Event End Date:</strong> <?php echo date('F j, Y', strtotime($project['event_end_date'])); ?></p>
+                    <p><strong>Date de fin :</strong> <?php 
+                        echo strftime('%e %B %Y', strtotime($project['event_end_date'])); 
+                    ?></p>
                 <?php endif; ?>
                 <?php if (!empty($project['event_end_time'])): ?>
-                    <p><strong>Event End Time:</strong> <?php echo date('g:i A', strtotime($project['event_end_time'])); ?></p>
+                    <p><strong>Heure de fin :</strong> <?php echo date('H:i', strtotime($project['event_end_time'])); ?></p>
                 <?php endif; ?>
                 <?php if (!empty($project['event_location'])): ?>
-                    <p><strong>Location:</strong> <?php echo htmlspecialchars($project['event_location']); ?></p>
+                    <p><strong>Lieu :</strong> <?php echo htmlspecialchars($project['event_location']); ?></p>
                 <?php endif; ?>
-                <p><strong>Description:</strong> <?php echo htmlspecialchars($project['description']); ?></p>
-                <p><strong>Guest List Visible to Accepted Guests:</strong> <?php echo $project['show_guest_list'] ? 'Yes' : 'No'; ?></p>
-                <p><strong>Created:</strong> <?php echo date('F j, Y', strtotime($project['created_at'])); ?></p>
+                <p><strong>Description :</strong> <?php echo htmlspecialchars($project['description']); ?></p>
+                <p><strong>Liste des invités visible par les invités acceptés :</strong> <?php echo $project['show_guest_list'] ? 'Oui' : 'Non'; ?></p>
+                <p><strong>Créé le :</strong> <?php 
+                    echo strftime('%e %B %Y', strtotime($project['created_at'])); 
+                ?></p>
             </div>
             
             <div class="section">
                 <h3>Invitations</h3>
-                <a href="create_invitation.php?project_id=<?php echo $project_id; ?>" class="btn btn-primary">Create New Invitation</a>
+                <a href="create_invitation.php?project_id=<?php echo $project_id; ?>" class="btn btn-primary">Créer une Nouvelle Invitation</a>
                 
                 <?php if (empty($invitations)): ?>
-                    <p class="empty-message">No invitations created yet.</p>
+                    <p class="empty-message">Aucune invitation créée pour le moment.</p>
                 <?php else: ?>
                     <table class="table">
                         <thead>
                             <tr>
-                                <th>Invitee Name</th>
-                                <th>Status</th>
+                                <th>Nom de l'invité</th>
+                                <th>Statut</th>
                                 <th>Message</th>
-                                <th>Invitation Link</th>
-                                <th>Created</th>
+                                <th>Lien d'invitation</th>
+                                <th>Créé le</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -132,7 +144,16 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td><?php echo htmlspecialchars($invitation['invitee_name'] ?: 'N/A'); ?></td>
                                     <td>
                                         <span class="status <?php echo htmlspecialchars($invitation['status']); ?>">
-                                            <?php echo ucfirst(htmlspecialchars($invitation['status'])); ?>
+                                            <?php 
+                                                $status = htmlspecialchars($invitation['status']);
+                                                $status_fr = [
+                                                    'pending' => 'En attente',
+                                                    'accepted' => 'Accepté',
+                                                    'declined' => 'Refusé',
+                                                    'uncertain' => 'Incertain'
+                                                ];
+                                                echo $status_fr[$status] ?? ucfirst($status);
+                                            ?>
                                         </span>
                                     </td>
                                     <td>
@@ -150,9 +171,11 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td>
                                         <input type="text" class="invitation-link" readonly 
                                                value="<?php echo SITE_URL; ?>/accept_invitation.php?project=<?php echo $project_id; ?>&code=<?php echo htmlspecialchars($invitation['invitation_code']); ?>">
-                                        <button class="btn btn-small" onclick="copyLink(this)">Copy</button>
+                                        <button class="btn btn-small" onclick="copyLink(this)">Copier</button>
                                     </td>
-                                    <td><?php echo date('M j, Y', strtotime($invitation['created_at'])); ?></td>
+                                    <td><?php 
+                                        echo strftime('%e %b %Y', strtotime($invitation['created_at'])); 
+                                    ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -161,7 +184,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             
             <div class="project-actions">
-                <a href="index.php" class="btn btn-secondary">Back to Projects</a>
+                <a href="index.php" class="btn btn-secondary">Retour aux Projets</a>
             </div>
         </div>
     </div>
@@ -175,23 +198,23 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(text).then(() => {
                 const originalText = button.textContent;
-                button.textContent = 'Copied!';
+                button.textContent = 'Copié !';
                 setTimeout(() => {
                     button.textContent = originalText;
                 }, 2000);
             }).catch(err => {
-                console.error('Failed to copy: ', err);
+                console.error('Échec de la copie: ', err);
                 // Fallback for older browsers (intentionally kept for legacy compatibility)
                 input.select();
                 try {
                     document.execCommand('copy');
                     const originalText = button.textContent;
-                    button.textContent = 'Copied!';
+                    button.textContent = 'Copié !';
                     setTimeout(() => {
                         button.textContent = originalText;
                     }, 2000);
                 } catch (e) {
-                    alert('Failed to copy link');
+                    alert('Échec de la copie du lien');
                 }
             });
         } else {
@@ -200,12 +223,12 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             try {
                 document.execCommand('copy');
                 const originalText = button.textContent;
-                button.textContent = 'Copied!';
+                button.textContent = 'Copié !';
                 setTimeout(() => {
                     button.textContent = originalText;
                 }, 2000);
             } catch (e) {
-                alert('Failed to copy link');
+                alert('Échec de la copie du lien');
             }
         }
     }

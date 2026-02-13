@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     
     if (empty($username) || empty($password)) {
-        $error = 'Username and password are required.';
+        $error = 'Le nom d\'utilisateur et le mot de passe sont requis.';
     } else {
         try {
             $conn = getDBConnection();
@@ -28,26 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header('Location: index.php');
                 exit();
             } else {
-                $error = 'Invalid username or password.';
+                $error = 'Nom d\'utilisateur ou mot de passe invalide.';
             }
         } catch(PDOException $e) {
-            $error = 'Login failed. Please try again.';
+            $error = 'Connexion échouée. Veuillez réessayer.';
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Party Manager</title>
+    <title>Connexion - Gestionnaire de Fêtes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="auth-box">
-            <h1>Login</h1>
+            <h1>Connexion</h1>
             
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
@@ -55,20 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="username">Username:</label>
+                    <label for="username">Nom d'utilisateur :</label>
                     <input type="text" id="username" name="username" required autofocus>
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="password">Mot de passe :</label>
                     <input type="password" id="password" name="password" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" class="btn btn-primary">Se connecter</button>
             </form>
             
             <p class="text-center">
-                Don't have an account? <a href="register.php">Register here</a>
+                Vous n'avez pas de compte ? <a href="register.php">S'inscrire ici</a>
             </p>
         </div>
     </div>
