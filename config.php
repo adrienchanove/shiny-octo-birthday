@@ -7,21 +7,31 @@ function loadEnvFile($path) {
     
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
+        $trimmed = trim($line);
+        
         // Skip comments and empty lines
-        if (strpos(trim($line), '#') === 0 || trim($line) === '') {
+        if ($trimmed === '' || strpos($trimmed, '#') === 0) {
             continue;
         }
         
         // Parse KEY=VALUE format
-        if (strpos($line, '=') !== false) {
-            list($key, $value) = explode('=', $line, 2);
+        if (strpos($trimmed, '=') !== false) {
+            list($key, $value) = explode('=', $trimmed, 2);
             $key = trim($key);
             $value = trim($value);
             
-            // Remove quotes if present
-            if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
-                (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
-                $value = substr($value, 1, -1);
+            // Validate key is not empty and follows naming conventions
+            if (empty($key) || !preg_match('/^[A-Z_][A-Z0-9_]*$/i', $key)) {
+                continue;
+            }
+            
+            // Remove quotes if present (handles both single and double quotes)
+            // Note: Does not handle escaped quotes within values
+            if (strlen($value) >= 2) {
+                if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
+                    (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                    $value = substr($value, 1, -1);
+                }
             }
             
             // Set in $_ENV superglobal
