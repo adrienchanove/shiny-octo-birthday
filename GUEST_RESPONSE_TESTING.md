@@ -9,19 +9,15 @@ This document outlines the test cases for the new guest response features.
 3. **Response Editing**: Guests can change their response at any time
 4. **Guest List Visibility**: Hosts can enable/disable showing the list of accepted guests to other attendees
 
-## Database Migration
+## Database Setup
 
-Before testing, you need to migrate the database:
+Before testing, set up the database:
 
-### For New Installations:
 ```bash
 php reset_database.php
 ```
 
-### For Existing Installations:
-```bash
-php migrate_guest_response.php
-```
+This will create a clean database with all the latest schema changes.
 
 ## Test Cases
 
@@ -247,17 +243,18 @@ php migrate_guest_response.php
 
 ### 10. Backward Compatibility
 
-**Test 10.1: Existing Projects**
-- [ ] If testing on existing database with old projects
-- [ ] Run migration script
-- [ ] Verify old projects now have `show_guest_list = 0` (false)
-- [ ] Verify old invitations still work
-- [ ] Verify guest list is not shown for old projects
+**Test 10.1: Schema Verification**
+- [ ] After running `reset_database.php`, verify all tables have correct schema
+- [ ] Verify projects table has `show_guest_list` field with default FALSE
+- [ ] Verify invitations table has `uncertain` status option
+- [ ] Verify invitations table has `guest_message` and `response_updated_at` fields
 
-**Test 10.2: Existing Invitations**
-- [ ] Existing invitations should have `guest_message = NULL`
-- [ ] Verify they still display correctly
-- [ ] Verify guests can add messages to existing invitations
+**Test 10.2: Default Values**
+- [ ] Create a new project without checking guest list option
+- [ ] Verify `show_guest_list = 0` (false) in database
+- [ ] Create an invitation and don't add a message
+- [ ] Verify `guest_message = NULL` in database
+- [ ] Verify invitation displays correctly
 
 ## Performance Testing
 

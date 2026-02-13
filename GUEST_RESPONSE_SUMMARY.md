@@ -25,13 +25,7 @@ Added new fields:
 - `guest_message` TEXT - Stores optional message from guest to host
 - `response_updated_at` TIMESTAMP NULL - Tracks when response was last changed
 
-### 2. Migration Script (migrate_guest_response.php)
-- **New file** created for upgrading existing installations
-- Safely adds new fields without affecting existing data
-- Includes confirmation prompt and detailed feedback
-- Can be run multiple times safely (checks if fields exist)
-
-### 3. Create Project Page (create_project.php)
+### 2. Create Project Page (create_project.php)
 
 **Backend Changes:**
 - Added `$show_guest_list` variable to capture checkbox state
@@ -41,7 +35,7 @@ Added new fields:
 - Added checkbox: "Show guest list to attendees (guests can see who else has accepted)"
 - Checkbox is optional and unchecked by default
 
-### 4. Accept Invitation Page (accept_invitation.php)
+### 3. Accept Invitation Page (accept_invitation.php)
 
 **Backend Changes:**
 - Updated all SQL queries to include `p.show_guest_list` field
@@ -62,7 +56,7 @@ Added new fields:
 - Added helpful text: "You can change your response at any time..."
 - All three buttons remain visible even after initial response (enables editing)
 
-### 5. View Project Page (view_project.php)
+### 4. View Project Page (view_project.php)
 
 **Backend Changes:**
 - No query changes needed (invitations already fetched)
@@ -77,7 +71,7 @@ Added new fields:
   - "-" for empty messages
 - Updated table header and columns to accommodate new field
 
-### 6. Styles (style.css)
+### 5. Styles (style.css)
 
 **New Styles Added:**
 - `.status.uncertain` - Yellow/warning badge for uncertain status
@@ -90,11 +84,10 @@ Added new fields:
 - Updated button colors to meet WCAG AA contrast standards
 - Proper hover states for all interactive elements
 
-### 7. Documentation
+### 6. Documentation
 
 **README.md Updates:**
 - Added new features to Features section
-- Added "Upgrading from Previous Version" section with migration instructions
 - Updated "Creating a Project" section to include guest list checkbox
 - Updated "Accepting an Invitation" section with new response options
 - Added "Guest List Feature" section explaining visibility rules
@@ -196,30 +189,24 @@ See `GUEST_RESPONSE_TESTING.md` for comprehensive test cases covering:
 6. README.md (documentation)
 
 **New Files:**
-1. migrate_guest_response.php (database migration)
-2. GUEST_RESPONSE_TESTING.md (test guide)
-3. GUEST_RESPONSE_SUMMARY.md (this file)
+1. GUEST_RESPONSE_TESTING.md (test guide)
+2. GUEST_RESPONSE_SUMMARY.md (this file)
 
 **Total Changes:**
-- 8 files modified/created
+- 7 files modified/created
 - ~500 lines of code added
 - 0 lines of existing functionality removed
 - 100% backward compatible
 
 ## Deployment Instructions
 
-### For New Installations
+### For All Installations
 1. Pull the latest code
 2. Run `php reset_database.php` or import `database.sql`
-3. Configure `.env` file
+3. Configure `.env` file (if not already done)
 4. Access the application
 
-### For Existing Installations
-1. Pull the latest code
-2. Run `php migrate_guest_response.php`
-3. Answer "yes" to confirm migration
-4. Verify migration success
-5. No downtime required (migration adds fields, doesn't modify existing data)
+**Note:** The `reset_database.php` script will recreate the database with all the latest schema changes. For new installations, this creates everything from scratch. For existing installations, this will reset the database (you will lose existing data, so backup if needed).
 
 ## Success Metrics
 

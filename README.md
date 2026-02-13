@@ -68,21 +68,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 
 5. Start your web server and navigate to the application URL
 
-## Upgrading from Previous Version
-
-If you're upgrading from a previous version that doesn't include the guest response features, you need to migrate your database:
-
-```bash
-php migrate_guest_response.php
-```
-
-This will add the new fields required for:
-- Guest response options (uncertain/maybe)
-- Guest messages
-- Response editing
-- Guest list visibility
-
-The migration is safe and will not affect existing data.
+**Note:** If you're upgrading from a previous version, use the `reset_database.php` script to recreate your database with the latest schema. This ensures all new features are properly available.
 
 ## Usage
 
