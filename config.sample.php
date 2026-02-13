@@ -9,8 +9,10 @@ define('DB_NAME', 'party_manager');  // Database name
 // Site configuration
 define('SITE_URL', 'http://localhost'); // Change to your domain
 
-// Start session
-session_start();
+// Start session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Database connection
 function getDBConnection() {

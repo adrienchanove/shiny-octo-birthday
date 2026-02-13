@@ -123,7 +123,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }, 2000);
             }).catch(err => {
                 console.error('Failed to copy: ', err);
-                // Fallback for older browsers
+                // Fallback for older browsers (intentionally kept for legacy compatibility)
                 input.select();
                 try {
                     document.execCommand('copy');
@@ -137,7 +137,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 }
             });
         } else {
-            // Fallback for older browsers
+            // Fallback for older browsers (intentionally kept for legacy compatibility)
             input.select();
             try {
                 document.execCommand('copy');
