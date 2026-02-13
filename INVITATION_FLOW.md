@@ -10,7 +10,7 @@
 
 ┌──────────────┐
 │   Register   │──────► User creates account
-└──────┬───────┘       (username, email, password)
+└──────┬───────┘       (username, password)
        │
        ▼
 ┌──────────────┐
@@ -46,11 +46,11 @@
 │                                                                    │
 │  Invitations:                                                     │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │ Name    │ Email          │ Status   │ Link              │    │
+│  │ Name    │ Status   │ Link                               │    │
 │  ├─────────────────────────────────────────────────────────┤    │
-│  │ Jane    │ jane@email.com │ Accepted │ [Copy Link]      │    │
-│  │ Mike    │ mike@email.com │ Pending  │ [Copy Link]      │    │
-│  │ Sarah   │ sarah@email.com│ Declined │ [Copy Link]      │    │
+│  │ Jane    │ Accepted │ [Copy Link]                        │    │
+│  │ Mike    │ Pending  │ [Copy Link]                        │    │
+│  │ Sarah   │ Declined │ [Copy Link]                        │    │
 │  └─────────────────────────────────────────────────────────┘    │
 └─────────┬──────────────────────────────────────────────────────────┘
           │
@@ -59,7 +59,6 @@
 ┌───────────────────────────────────────────────────────────────────┐
 │                   CREATE INVITATION                                │
 │  Invitee Name: [Tom Smith]                                        │
-│  Invitee Email: [tom@email.com]                                   │
 │  [Create Invitation]                                              │
 └─────────┬──────────────────────────────────────────────────────────┘
           │
@@ -145,12 +144,12 @@
 │                   HOST SEES UPDATED STATUS                          │
 │  Invitations:                                                      │
 │  ┌─────────────────────────────────────────────────────────┐     │
-│  │ Name    │ Email          │ Status   │ Accepted At      │     │
+│  │ Name    │ Status   │ Accepted At                        │     │
 │  ├─────────────────────────────────────────────────────────┤     │
-│  │ Jane    │ jane@email.com │ Accepted │ Feb 10, 2026     │     │
-│  │ Mike    │ mike@email.com │ Pending  │ -                │     │
-│  │ Sarah   │ sarah@email.com│ Declined │ -                │     │
-│  │ Tom     │ tom@email.com  │ Accepted │ Feb 13, 2026 ✓   │     │
+│  │ Jane    │ Accepted │ Feb 10, 2026                       │     │
+│  │ Mike    │ Pending  │ -                                  │     │
+│  │ Sarah   │ Declined │ -                                  │     │
+│  │ Tom     │ Accepted │ Feb 13, 2026 ✓                     │     │
 │  └─────────────────────────────────────────────────────────┘     │
 └────────────────────────────────────────────────────────────────────┘
 ```
@@ -197,7 +196,6 @@ users
         └─► invitations (project_id FK)
               • invitation_code (unique)
               • invitee_name
-              • invitee_email
               • status (pending/accepted/declined)
 ```
 

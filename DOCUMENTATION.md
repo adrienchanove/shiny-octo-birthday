@@ -30,7 +30,7 @@ View Event Details → Accept/Decline → Status Updated
 
 **register.php**
 - New user registration
-- Validates username, email, password
+- Validates username and password
 - Password hashing with password_hash()
 - Minimum 8 character password requirement
 
@@ -78,8 +78,7 @@ View Event Details → Accept/Decline → Status Updated
 **create_invitation.php**
 - Form to create invitation for a project
 - Fields:
-  - Invitee Name (optional)
-  - Invitee Email (optional)
+  - Invitee Name (required)
 - Generates unique invitation code (format: XXXX-XXXX-XXXX)
 - Requires authentication and ownership verification
 
@@ -110,7 +109,6 @@ View Event Details → Accept/Decline → Status Updated
 **users**
 - id (Primary Key)
 - username (Unique)
-- email (Unique)
 - password (Hashed)
 - created_at
 
@@ -128,7 +126,6 @@ View Event Details → Accept/Decline → Status Updated
 - project_id (Foreign Key → projects.id)
 - invitation_code (Unique, format: XXXX-XXXX-XXXX)
 - invitee_name
-- invitee_email
 - status (pending|accepted|declined)
 - created_at
 - accepted_at
