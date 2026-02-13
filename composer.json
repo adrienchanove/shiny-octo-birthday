@@ -1,0 +1,14 @@
+{
+    "name": "adrienchanove/shiny-octo-birthday",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Copilot",
+            "email": "copilot@example.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "vlucas/phpdotenv": "*"
+    }
+}
