@@ -71,7 +71,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p><strong>Location:</strong> <?php echo htmlspecialchars($project['event_location']); ?></p>
                 <?php endif; ?>
                 <p><strong>Description:</strong> <?php echo htmlspecialchars($project['description']); ?></p>
-                <p><strong>Guest List Visible to Attendees:</strong> <?php echo $project['show_guest_list'] ? 'Yes' : 'No'; ?></p>
+                <p><strong>Guest List Visible to Accepted Guests:</strong> <?php echo $project['show_guest_list'] ? 'Yes' : 'No'; ?></p>
                 <p><strong>Created:</strong> <?php echo date('F j, Y', strtotime($project['created_at'])); ?></p>
             </div>
             
@@ -106,7 +106,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <div class="guest-message-preview" title="<?php echo htmlspecialchars($invitation['guest_message']); ?>">
                                                 <?php 
                                                     $msg = htmlspecialchars($invitation['guest_message']);
-                                                    echo strlen($msg) > 50 ? substr($msg, 0, 50) . '...' : $msg;
+                                                    echo mb_strlen($msg) > 50 ? mb_substr($msg, 0, 50) . '...' : $msg;
                                                 ?>
                                             </div>
                                         <?php else: ?>

@@ -18,7 +18,6 @@ require_once __DIR__ . '/config.php';
 // Only accessible from console
 if (isset($_SERVER['REQUEST_METHOD'])) {
     die();
-    return;
 }
 
 echo "================================\n";
