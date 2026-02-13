@@ -1,0 +1,95 @@
+<?php
+require_once 'config.php';
+requireLogin();
+
+$error = '';
+$success = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $title = trim($_POST['title']);
+    $description = trim($_POST['description']);
+    $event_date = $_POST['event_date'];
+    $event_type = $_POST['event_type'];
+    
+    if (empty($title) || empty($event_date) || empty($event_type)) {
+        $error = 'Title, date, and event type are required.';
+    } elseif (!in_array($event_type, ['party', 'birthday'])) {
+        $error = 'Invalid event type.';
+    } else {
+        try {
+            $conn = getDBConnection();
+            $stmt = $conn->prepare("INSERT INTO projects (user_id, title, description, event_date, event_type) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([getCurrentUserId(), $title, $description, $event_date, $event_type]);
+            
+            $project_id = $conn->lastInsertId();
+            header('Location: view_project.php?id=' . $project_id);
+            exit();
+        } catch(PDOException $e) {
+            $error = 'Failed to create project. Please try again.';
+        }
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Project - Party Manager</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <h1 class="logo">Party Manager</h1>
+            <div class="nav-links">
+                <a href="index.php">My Projects</a>
+                <a href="create_project.php" class="active">Create Project</a>
+                <span class="user-info">Welcome, <?php echo htmlspecialchars($_SESSION['username']); ?></span>
+                <a href="logout.php">Logout</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container">
+        <div class="form-container">
+            <h2>Create New Project</h2>
+            
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+            <?php endif; ?>
+            
+            <form method="POST" action="">
+                <div class="form-group">
+                    <label for="title">Title: *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event_type">Event Type: *</label>
+                    <select id="event_type" name="event_type" required>
+                        <option value="">Select type</option>
+                        <option value="party">Party</option>
+                        <option value="birthday">Birthday</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="event_date">Event Date: *</label>
+                    <input type="date" id="event_date" name="event_date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <textarea id="description" name="description" rows="4"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Create Project</button>
+                    <a href="index.php" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
