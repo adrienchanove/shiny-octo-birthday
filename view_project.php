@@ -32,6 +32,40 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo htmlspecialchars($project['title']); ?> - Party Manager</title>
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="<?php echo htmlspecialchars($project['title']); ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($project['description']); ?>">
+    <meta property="og:type" content="event">
+    <meta property="og:url" content="<?php echo htmlspecialchars(SITE_URL . '/view_project.php?id=' . $project_id); ?>">
+    <meta property="og:site_name" content="Party Manager">
+    
+    <!-- Event Specific Open Graph Tags -->
+    <?php 
+        $start_timestamp = strtotime($project['event_date'] . ' ' . ($project['event_time'] ?: '00:00:00'));
+        if ($start_timestamp !== false): 
+    ?>
+    <meta property="event:start_time" content="<?php echo date('c', $start_timestamp); ?>">
+    <?php endif; ?>
+    <?php 
+        if (!empty($project['event_end_date'])):
+            $end_timestamp = strtotime($project['event_end_date'] . ' ' . ($project['event_end_time'] ?: '23:59:59'));
+            if ($end_timestamp !== false):
+    ?>
+    <meta property="event:end_time" content="<?php echo date('c', $end_timestamp); ?>">
+    <?php 
+            endif;
+        endif; 
+    ?>
+    <?php if (!empty($project['event_location'])): ?>
+    <meta property="event:location" content="<?php echo htmlspecialchars($project['event_location']); ?>">
+    <?php endif; ?>
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="<?php echo htmlspecialchars($project['title']); ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($project['description']); ?>">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
