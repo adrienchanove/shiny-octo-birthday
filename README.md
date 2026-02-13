@@ -37,6 +37,11 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    ```bash
    mysql -u root -p party_manager < database.sql
    ```
+   
+   **For existing installations**: If you already have the database set up, run the migration script to add the new time and location fields:
+   ```bash
+   mysql -u root -p party_manager < migration_add_time_location.sql
+   ```
 
 4. Configure the database connection:
    - Open `config.php`
@@ -65,9 +70,13 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 1. Log in to your account
 2. Click "Create Project"
 3. Enter project details:
-   - Title
-   - Event Type (Party or Birthday)
-   - Event Date
+   - Title (required)
+   - Event Type (Party or Birthday) (required)
+   - Event Date (required)
+   - Event Time (optional)
+   - Event End Date (optional)
+   - Event End Time (optional)
+   - Event Location (optional)
    - Description (optional)
 4. Click "Create Project"
 
@@ -135,6 +144,10 @@ Each invitation link contains:
 - `title`: Project title
 - `description`: Project description
 - `event_date`: Date of the event
+- `event_time`: Time of the event (optional)
+- `event_end_date`: End date of the event (optional)
+- `event_end_time`: End time of the event (optional)
+- `event_location`: Location of the event (optional)
 - `event_type`: 'party' or 'birthday'
 - `created_at`: Project creation timestamp
 
