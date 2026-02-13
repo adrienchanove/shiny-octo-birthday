@@ -42,7 +42,7 @@ if (!$project_id || !$invitation_code) {
     
     // Get invitation details
     $stmt = $conn->prepare("
-        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
+        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, p.show_guest_list, u.username as host_username
         FROM invitations i
         JOIN projects p ON i.project_id = p.id
         JOIN users u ON p.user_id = u.id
@@ -57,16 +57,17 @@ if (!$project_id || !$invitation_code) {
         // Handle acceptance
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $action = $_POST['action'];
+            $guest_message = isset($_POST['guest_message']) ? trim($_POST['guest_message']) : null;
             
             if ($action === 'accept') {
                 try {
-                    $stmt = $conn->prepare("UPDATE invitations SET status = 'accepted', accepted_at = NOW() WHERE id = ?");
-                    $stmt->execute([$invitation['id']]);
+                    $stmt = $conn->prepare("UPDATE invitations SET status = 'accepted', accepted_at = NOW(), response_updated_at = NOW(), guest_message = ? WHERE id = ?");
+                    $stmt->execute([$guest_message, $invitation['id']]);
                     $success = 'You have accepted the invitation!';
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
-                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
+                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, p.show_guest_list, u.username as host_username
                         FROM invitations i
                         JOIN projects p ON i.project_id = p.id
                         JOIN users u ON p.user_id = u.id
@@ -79,13 +80,13 @@ if (!$project_id || !$invitation_code) {
                 }
             } elseif ($action === 'decline') {
                 try {
-                    $stmt = $conn->prepare("UPDATE invitations SET status = 'declined' WHERE id = ?");
-                    $stmt->execute([$invitation['id']]);
+                    $stmt = $conn->prepare("UPDATE invitations SET status = 'declined', response_updated_at = NOW(), guest_message = ? WHERE id = ?");
+                    $stmt->execute([$guest_message, $invitation['id']]);
                     $success = 'You have declined the invitation.';
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
-                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, u.username as host_username
+                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, p.show_guest_list, u.username as host_username
                         FROM invitations i
                         JOIN projects p ON i.project_id = p.id
                         JOIN users u ON p.user_id = u.id
@@ -95,6 +96,25 @@ if (!$project_id || !$invitation_code) {
                     $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
                 } catch(PDOException $e) {
                     $error = 'Failed to decline invitation. Please try again.';
+                }
+            } elseif ($action === 'uncertain') {
+                try {
+                    $stmt = $conn->prepare("UPDATE invitations SET status = 'uncertain', response_updated_at = NOW(), guest_message = ? WHERE id = ?");
+                    $stmt->execute([$guest_message, $invitation['id']]);
+                    $success = 'You have marked your response as uncertain.';
+                    
+                    // Refresh invitation data
+                    $stmt = $conn->prepare("
+                        SELECT i.*, p.title, p.description, p.event_date, p.event_time, p.event_end_date, p.event_end_time, p.event_location, p.event_type, p.show_guest_list, u.username as host_username
+                        FROM invitations i
+                        JOIN projects p ON i.project_id = p.id
+                        JOIN users u ON p.user_id = u.id
+                        WHERE i.project_id = ? AND i.invitation_code = ?
+                    ");
+                    $stmt->execute([$project_id, $invitation_code]);
+                    $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
+                } catch(PDOException $e) {
+                    $error = 'Failed to update response. Please try again.';
                 }
             }
         }
@@ -181,16 +201,56 @@ if (!$project_id || !$invitation_code) {
                                 <?php echo ucfirst(htmlspecialchars($invitation['status'])); ?>
                             </span>
                         </p>
+                        <?php if (!empty($invitation['guest_message'])): ?>
+                            <p><strong>Your Message:</strong> <?php echo nl2br(htmlspecialchars($invitation['guest_message'])); ?></p>
+                        <?php endif; ?>
                     </div>
                     
-                    <?php if ($invitation['status'] === 'pending'): ?>
-                        <form method="POST" action="">
-                            <div class="invitation-actions">
-                                <button type="submit" name="action" value="accept" class="btn btn-success">Accept Invitation</button>
-                                <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
-                            </div>
-                        </form>
+                    <!-- Guest list if enabled by host and guest has accepted -->
+                    <?php if ($invitation['show_guest_list'] && $invitation['status'] === 'accepted'): ?>
+                        <div class="guest-list-section">
+                            <h3>Other Guests Attending</h3>
+                            <?php
+                                $stmt = $conn->prepare("
+                                    SELECT invitee_name 
+                                    FROM invitations 
+                                    WHERE project_id = ? AND status = 'accepted' AND id != ?
+                                    ORDER BY invitee_name
+                                ");
+                                $stmt->execute([$project_id, $invitation['id']]);
+                                $accepted_guests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                                
+                                if (empty($accepted_guests)):
+                            ?>
+                                <p class="empty-message">No other guests have accepted yet.</p>
+                            <?php else: ?>
+                                <ul class="guest-list">
+                                    <?php foreach ($accepted_guests as $guest): ?>
+                                        <li><?php echo htmlspecialchars($guest['invitee_name'] ?: 'Guest'); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php endif; ?>
+                        </div>
                     <?php endif; ?>
+                    
+                    <form method="POST" action="">
+                        <div class="form-group">
+                            <label for="guest_message">Message to Host (optional):</label>
+                            <textarea id="guest_message" name="guest_message" rows="3" placeholder="Leave a message for the host..."><?php echo htmlspecialchars($invitation['guest_message'] ?? ''); ?></textarea>
+                        </div>
+                        
+                        <div class="invitation-actions">
+                            <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
+                            <button type="submit" name="action" value="uncertain" class="btn btn-warning">Maybe</button>
+                            <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                        </div>
+                        
+                        <?php if ($invitation['status'] !== 'pending'): ?>
+                            <p class="text-center" style="margin-top: 15px; color: #666; font-size: 14px;">
+                                You can change your response at any time by clicking a different button above.
+                            </p>
+                        <?php endif; ?>
+                    </form>
                 </div>
             <?php endif; ?>
             

@@ -435,6 +435,11 @@ button[type="submit"] {
     color: #721c24;
 }
 
+.status.uncertain {
+    background-color: #ffeeba;
+    color: #856404;
+}
+
 .invitation-link {
     width: 400px;
     max-width: 100%;
@@ -514,6 +519,50 @@ button[type="submit"] {
 
 .invitation-actions .btn {
     flex: 1;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.btn-warning:hover {
+    background-color: #e0a800;
+}
+
+/* Guest List Section */
+.guest-list-section {
+    margin: 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.guest-list-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.guest-list {
+    list-style: none;
+    padding: 0;
+}
+
+.guest-list li {
+    padding: 8px 12px;
+    margin-bottom: 5px;
+    background: white;
+    border-radius: 5px;
+    border-left: 3px solid #28a745;
+}
+
+/* Guest Message Preview in Table */
+.guest-message-preview {
+    max-width: 200px;
+    font-size: 13px;
+    color: #555;
+    cursor: help;
 }
 
 /* Responsive Design */

@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS projects (
     event_end_time TIME,
     event_location VARCHAR(255),
     event_type ENUM('party', 'birthday') NOT NULL,
+    show_guest_list BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
@@ -33,9 +34,11 @@ CREATE TABLE IF NOT EXISTS invitations (
     project_id INT NOT NULL,
     invitation_code VARCHAR(14) UNIQUE NOT NULL,
     invitee_name VARCHAR(100),
-    status ENUM('pending', 'accepted', 'declined') DEFAULT 'pending',
+    status ENUM('pending', 'accepted', 'declined', 'uncertain') DEFAULT 'pending',
+    guest_message TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     accepted_at TIMESTAMP NULL,
+    response_updated_at TIMESTAMP NULL,
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
 );
 

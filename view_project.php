@@ -71,6 +71,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p><strong>Location:</strong> <?php echo htmlspecialchars($project['event_location']); ?></p>
                 <?php endif; ?>
                 <p><strong>Description:</strong> <?php echo htmlspecialchars($project['description']); ?></p>
+                <p><strong>Guest List Visible to Attendees:</strong> <?php echo $project['show_guest_list'] ? 'Yes' : 'No'; ?></p>
                 <p><strong>Created:</strong> <?php echo date('F j, Y', strtotime($project['created_at'])); ?></p>
             </div>
             
@@ -86,6 +87,7 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <tr>
                                 <th>Invitee Name</th>
                                 <th>Status</th>
+                                <th>Message</th>
                                 <th>Invitation Link</th>
                                 <th>Created</th>
                             </tr>
@@ -98,6 +100,18 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <span class="status <?php echo htmlspecialchars($invitation['status']); ?>">
                                             <?php echo ucfirst(htmlspecialchars($invitation['status'])); ?>
                                         </span>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($invitation['guest_message'])): ?>
+                                            <div class="guest-message-preview" title="<?php echo htmlspecialchars($invitation['guest_message']); ?>">
+                                                <?php 
+                                                    $msg = htmlspecialchars($invitation['guest_message']);
+                                                    echo strlen($msg) > 50 ? substr($msg, 0, 50) . '...' : $msg;
+                                                ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <span style="color: #999;">-</span>
+                                        <?php endif; ?>
                                     </td>
                                     <td>
                                         <input type="text" class="invitation-link" readonly 
