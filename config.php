@@ -1,12 +1,50 @@
 <?php
 // Load environment variables from .env file
-require_once __DIR__ . '/vendor/autoload.php';
+function loadEnvFile($path) {
+    if (!file_exists($path)) {
+        die("Error: .env file not found at $path. Please copy .env.example to .env and configure it.");
+    }
+    
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        // Skip comments and empty lines
+        if (strpos(trim($line), '#') === 0 || trim($line) === '') {
+            continue;
+        }
+        
+        // Parse KEY=VALUE format
+        if (strpos($line, '=') !== false) {
+            list($key, $value) = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value);
+            
+            // Remove quotes if present
+            if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
+                (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                $value = substr($value, 1, -1);
+            }
+            
+            // Set in $_ENV superglobal
+            $_ENV[$key] = $value;
+            putenv("$key=$value");
+        }
+    }
+}
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
-$dotenv->load();
+// Load .env file
+loadEnvFile(__DIR__ . '/.env');
 
-// Validate that all required environment variables are present
-$dotenv->required(['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'SITE_URL']);
+// Validate required environment variables
+$required = ['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'SITE_URL'];
+$missing = [];
+foreach ($required as $var) {
+    if (!isset($_ENV[$var])) {
+        $missing[] = $var;
+    }
+}
+if (!empty($missing)) {
+    die("Error: Missing required environment variables: " . implode(', ', $missing));
+}
 
 // Database configuration
 define('DB_HOST', $_ENV['DB_HOST']);

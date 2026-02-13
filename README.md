@@ -18,7 +18,6 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 - MySQL 5.6 or higher
 - Web server (Apache/Nginx)
 - PDO PHP extension
-- Composer (for dependency management)
 
 ## Installation
 
@@ -28,12 +27,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    cd shiny-octo-birthday
    ```
 
-2. Install dependencies:
-   ```bash
-   composer install
-   ```
-
-3. Create environment configuration:
+2. Create environment configuration:
    - Copy `.env.example` to `.env`:
      ```bash
      cp .env.example .env
@@ -50,13 +44,13 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
      SITE_URL=http://your-domain.com
      ```
 
-4. Create a MySQL database:
+3. Create a MySQL database:
    ```bash
    mysql -u root -p
    CREATE DATABASE party_manager;
    ```
 
-5. Import the database schema:
+4. Import the database schema:
    ```bash
    mysql -u root -p party_manager < database.sql
    ```
@@ -119,7 +113,6 @@ Each invitation link contains:
 
 ```
 ├── .env.example            # Example environment configuration
-├── composer.json           # PHP dependencies
 ├── config.php              # Configuration loader and utility functions
 ├── database.sql            # Database schema
 ├── reset_database.php      # Console command to reset/recreate database
