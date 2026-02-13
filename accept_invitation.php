@@ -1,8 +1,36 @@
 <?php
 require_once 'config.php';
 
+// Handle both GET (link) and POST (manual entry form)
 $project_id = isset($_GET['project']) ? intval($_GET['project']) : 0;
 $invitation_code = isset($_GET['code']) ? $_GET['code'] : '';
+
+// Check if manual code entry was submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['manual_code'])) {
+    $invitation_code = trim($_POST['manual_code']);
+    $project_id_from_form = isset($_POST['project_id']) ? intval($_POST['project_id']) : 0;
+    
+    // If we have both code and project_id, redirect with them
+    if ($project_id_from_form && $invitation_code) {
+        header("Location: accept_invitation.php?project=" . $project_id_from_form . "&code=" . urlencode($invitation_code));
+        exit;
+    }
+    // If only code provided, look up the project_id
+    elseif ($invitation_code) {
+        $conn = getDBConnection();
+        $stmt = $conn->prepare("SELECT project_id FROM invitations WHERE invitation_code = ?");
+        $stmt->execute([$invitation_code]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($result) {
+            header("Location: accept_invitation.php?project=" . $result['project_id'] . "&code=" . urlencode($invitation_code));
+            exit;
+        } else {
+            // Code not found, continue with error display
+            $project_id = 0;
+        }
+    }
+}
+
 $error = '';
 $success = '';
 
@@ -87,6 +115,31 @@ if (!$project_id || !$invitation_code) {
             
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
+                
+                <!-- Manual code entry form when there's an error -->
+                <div class="form-container" style="margin-top: 20px; max-width: 100%; padding: 20px;">
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">Enter Your Invitation Code</h3>
+                    <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
+                        If you have an invitation code, please enter it below:
+                    </p>
+                    <form method="POST" action="">
+                        <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
+                        <div class="form-group">
+                            <label for="manual_code">Invitation Code (Format: XXXX-XXXX-XXXX)</label>
+                            <input 
+                                type="text" 
+                                id="manual_code" 
+                                name="manual_code" 
+                                placeholder="e.g., AB3X-9KL2-P7Q4" 
+                                required
+                                pattern="[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}"
+                                title="Please enter code in format: XXXX-XXXX-XXXX (uppercase letters and numbers)"
+                                style="text-transform: uppercase;"
+                            >
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Code</button>
+                    </form>
+                </div>
             <?php elseif ($success): ?>
                 <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
             <?php endif; ?>
