@@ -136,11 +136,12 @@ if (!$project_id || !$invitation_code) {
             $og_description = htmlspecialchars($invitation['description']);
         } else {
             $event_date_timestamp = strtotime($invitation['event_date']);
-            $fallback_desc = 'Join us for ' . $invitation['title'];
+            $fallback_desc = 'Join us for ' . htmlspecialchars($invitation['title']);
             if ($event_date_timestamp !== false) {
                 $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
             }
-            $og_description = htmlspecialchars($fallback_desc);
+            // $fallback_desc already has the title escaped, so we don't double-escape
+            $og_description = $fallback_desc;
         }
     ?>
     <meta property="og:description" content="<?php echo $og_description; ?>">
