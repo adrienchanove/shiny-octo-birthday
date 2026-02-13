@@ -18,6 +18,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 - MySQL 5.6 or higher
 - Web server (Apache/Nginx)
 - PDO PHP extension
+- Composer (for dependency management)
 
 ## Installation
 
@@ -27,13 +28,35 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    cd shiny-octo-birthday
    ```
 
-2. Create a MySQL database:
+2. Install dependencies:
+   ```bash
+   composer install
+   ```
+
+3. Create environment configuration:
+   - Copy `.env.example` to `.env`:
+     ```bash
+     cp .env.example .env
+     ```
+   - Edit `.env` and update the configuration values:
+     ```bash
+     # Database Configuration
+     DB_HOST=localhost
+     DB_USER=your_username
+     DB_PASS=your_password
+     DB_NAME=party_manager
+
+     # Site Configuration
+     SITE_URL=http://your-domain.com
+     ```
+
+4. Create a MySQL database:
    ```bash
    mysql -u root -p
    CREATE DATABASE party_manager;
    ```
 
-3. Import the database schema:
+5. Import the database schema:
    ```bash
    mysql -u root -p party_manager < database.sql
    ```
@@ -45,21 +68,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    
    This is useful for resetting the database to a clean state with the latest schema.
 
-4. Configure the database connection:
-   - Open `config.php`
-   - Update the database credentials:
-     ```php
-     define('DB_HOST', 'localhost');
-     define('DB_USER', 'your_username');
-     define('DB_PASS', 'your_password');
-     define('DB_NAME', 'party_manager');
-     ```
-   - Update the site URL:
-     ```php
-     define('SITE_URL', 'http://your-domain.com');
-     ```
-
-5. Start your web server and navigate to the application URL
+6. Start your web server and navigate to the application URL
 
 ## Usage
 
@@ -109,7 +118,9 @@ Each invitation link contains:
 ## File Structure
 
 ```
-├── config.php              # Database configuration and utility functions
+├── .env.example            # Example environment configuration
+├── composer.json           # PHP dependencies
+├── config.php              # Configuration loader and utility functions
 ├── database.sql            # Database schema
 ├── reset_database.php      # Console command to reset/recreate database
 ├── register.php            # User registration page
