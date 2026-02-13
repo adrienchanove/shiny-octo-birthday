@@ -36,7 +36,7 @@ $error = '';
 $success = '';
 
 if (!$project_id || !$invitation_code) {
-    $error = 'Invalid invitation link.';
+    $error = 'Lien d\'invitation invalide.';
 } else {
     $conn = getDBConnection();
     
@@ -52,7 +52,7 @@ if (!$project_id || !$invitation_code) {
     $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
     
     if (!$invitation) {
-        $error = 'Invitation not found or invalid.';
+        $error = 'Invitation introuvable ou invalide.';
     } else {
         // Handle acceptance
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,7 +63,7 @@ if (!$project_id || !$invitation_code) {
                 try {
                     $stmt = $conn->prepare("UPDATE invitations SET status = 'accepted', accepted_at = NOW(), response_updated_at = NOW(), guest_message = ? WHERE id = ?");
                     $stmt->execute([$guest_message, $invitation['id']]);
-                    $success = 'You have accepted the invitation!';
+                    $success = 'Vous avez accepté l\'invitation !';
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
@@ -76,13 +76,13 @@ if (!$project_id || !$invitation_code) {
                     $stmt->execute([$project_id, $invitation_code]);
                     $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
                 } catch(PDOException $e) {
-                    $error = 'Failed to accept invitation. Please try again.';
+                    $error = 'Échec de l\'acceptation de l\'invitation. Veuillez réessayer.';
                 }
             } elseif ($action === 'decline') {
                 try {
                     $stmt = $conn->prepare("UPDATE invitations SET status = 'declined', response_updated_at = NOW(), guest_message = ? WHERE id = ?");
                     $stmt->execute([$guest_message, $invitation['id']]);
-                    $success = 'You have declined the invitation.';
+                    $success = 'Vous avez refusé l\'invitation.';
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
@@ -95,13 +95,13 @@ if (!$project_id || !$invitation_code) {
                     $stmt->execute([$project_id, $invitation_code]);
                     $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
                 } catch(PDOException $e) {
-                    $error = 'Failed to decline invitation. Please try again.';
+                    $error = 'Échec du refus de l\'invitation. Veuillez réessayer.';
                 }
             } elseif ($action === 'uncertain') {
                 try {
                     $stmt = $conn->prepare("UPDATE invitations SET status = 'uncertain', response_updated_at = NOW(), guest_message = ? WHERE id = ?");
                     $stmt->execute([$guest_message, $invitation['id']]);
-                    $success = 'You have marked your response as uncertain.';
+                    $success = 'Vous avez marqué votre réponse comme incertaine.';
                     
                     // Refresh invitation data
                     $stmt = $conn->prepare("
@@ -114,7 +114,7 @@ if (!$project_id || !$invitation_code) {
                     $stmt->execute([$project_id, $invitation_code]);
                     $invitation = $stmt->fetch(PDO::FETCH_ASSOC);
                 } catch(PDOException $e) {
-                    $error = 'Failed to update response. Please try again.';
+                    $error = 'Échec de la mise à jour de la réponse. Veuillez réessayer.';
                 }
             }
         }
@@ -122,23 +122,24 @@ if (!$project_id || !$invitation_code) {
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo isset($invitation) ? htmlspecialchars($invitation['title']) . ' - Invitation' : 'Invitation'; ?> - Party Manager</title>
+    <title><?php echo isset($invitation) ? htmlspecialchars($invitation['title']) . ' - Invitation' : 'Invitation'; ?> - Gestionnaire de Fêtes</title>
     
     <?php if (isset($invitation)): ?>
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
+    <meta property="og:title" content="Vous êtes invité à <?php echo htmlspecialchars($invitation['title']); ?>">
     <?php 
         if (!empty($invitation['description'])) {
             $og_description = $invitation['description'];
         } else {
             $event_date_timestamp = strtotime($invitation['event_date']);
-            $fallback_desc = 'Join us for ' . $invitation['title'];
+            $fallback_desc = 'Rejoignez-nous pour ' . $invitation['title'];
             if ($event_date_timestamp !== false) {
-                $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
+                setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+                $fallback_desc .= ' le ' . strftime('%e %B %Y', $event_date_timestamp);
             }
             $og_description = $fallback_desc;
         }
@@ -146,7 +147,7 @@ if (!$project_id || !$invitation_code) {
     <meta property="og:description" content="<?php echo htmlspecialchars($og_description); ?>">
     <meta property="og:type" content="event">
     <meta property="og:url" content="<?php echo htmlspecialchars(SITE_URL . '/accept_invitation.php?project=' . $project_id . '&code=' . $invitation_code); ?>">
-    <meta property="og:site_name" content="Party Manager">
+    <meta property="og:site_name" content="Gestionnaire de Fêtes">
     
     <!-- Event Specific Open Graph Tags -->
     <?php 
@@ -171,7 +172,7 @@ if (!$project_id || !$invitation_code) {
     
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
+    <meta name="twitter:title" content="Vous êtes invité à <?php echo htmlspecialchars($invitation['title']); ?>">
     <meta name="twitter:description" content="<?php echo htmlspecialchars($og_description); ?>">
     <?php endif; ?>
     
@@ -180,32 +181,32 @@ if (!$project_id || !$invitation_code) {
 <body>
     <div class="container">
         <div class="invitation-box">
-            <h1>You're Invited!</h1>
+            <h1>Vous êtes invité !</h1>
             
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
                 
                 <!-- Manual code entry form when there's an error -->
                 <div class="form-container" style="margin-top: 20px; max-width: 100%; padding: 20px;">
-                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">Enter Your Invitation Code</h3>
+                    <h3 style="color: #667eea; margin-bottom: 15px; font-size: 18px;">Entrez votre code d'invitation</h3>
                     <p style="color: #666; margin-bottom: 20px; font-size: 14px;">
-                        If you have an invitation code, please enter it below:
+                        Si vous avez un code d'invitation, veuillez l'entrer ci-dessous :
                     </p>
                     <form method="POST" action="">
                         <div class="form-group">
-                            <label for="manual_code">Invitation Code (Format: XXXX-XXXX-XXXX)</label>
+                            <label for="manual_code">Code d'invitation (Format : XXXX-XXXX-XXXX)</label>
                             <input 
                                 type="text" 
                                 id="manual_code" 
                                 name="manual_code" 
-                                placeholder="e.g., AB3X-9KL2-P7Q4" 
+                                placeholder="ex: AB3X-9KL2-P7Q4" 
                                 required
                                 pattern="[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}"
-                                title="Please enter code in format: XXXX-XXXX-XXXX (uppercase letters and numbers)"
+                                title="Veuillez entrer le code au format : XXXX-XXXX-XXXX (lettres majuscules et chiffres)"
                                 style="text-transform: uppercase;"
                             >
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit Code</button>
+                        <button type="submit" class="btn btn-primary">Soumettre le code</button>
                     </form>
                 </div>
             <?php elseif ($success): ?>
@@ -215,49 +216,67 @@ if (!$project_id || !$invitation_code) {
             <?php if (isset($invitation)): ?>
                 <div class="invitation-details">
                     <div class="event-type-badge <?php echo htmlspecialchars($invitation['event_type']); ?>">
-                        <?php echo ucfirst(htmlspecialchars($invitation['event_type'])); ?>
+                        <?php 
+                            $type = htmlspecialchars($invitation['event_type']);
+                            echo $type === 'party' ? 'Fête' : 'Anniversaire';
+                        ?>
                     </div>
                     
                     <h2><?php echo htmlspecialchars($invitation['title']); ?></h2>
                     
                     <div class="invitation-info">
-                        <p><strong>Host:</strong> <?php echo htmlspecialchars($invitation['host_username']); ?></p>
-                        <p><strong>Date:</strong> <?php echo date('F j, Y', strtotime($invitation['event_date'])); ?></p>
+                        <p><strong>Hôte :</strong> <?php echo htmlspecialchars($invitation['host_username']); ?></p>
+                        <p><strong>Date :</strong> <?php 
+                            setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+                            echo strftime('%e %B %Y', strtotime($invitation['event_date'])); 
+                        ?></p>
                         <?php if (!empty($invitation['event_time'])): ?>
-                            <p><strong>Time:</strong> <?php echo date('g:i A', strtotime($invitation['event_time'])); ?></p>
+                            <p><strong>Heure :</strong> <?php echo date('H:i', strtotime($invitation['event_time'])); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($invitation['event_end_date'])): ?>
-                            <p><strong>End Date:</strong> <?php echo date('F j, Y', strtotime($invitation['event_end_date'])); ?></p>
+                            <p><strong>Date de fin :</strong> <?php 
+                                setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fra');
+                                echo strftime('%e %B %Y', strtotime($invitation['event_end_date'])); 
+                            ?></p>
                         <?php endif; ?>
                         <?php if (!empty($invitation['event_end_time'])): ?>
-                            <p><strong>End Time:</strong> <?php echo date('g:i A', strtotime($invitation['event_end_time'])); ?></p>
+                            <p><strong>Heure de fin :</strong> <?php echo date('H:i', strtotime($invitation['event_end_time'])); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($invitation['event_location'])): ?>
-                            <p><strong>Location:</strong> <?php echo htmlspecialchars($invitation['event_location']); ?></p>
+                            <p><strong>Lieu :</strong> <?php echo htmlspecialchars($invitation['event_location']); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($invitation['description'])): ?>
-                            <p><strong>Description:</strong> <?php echo htmlspecialchars($invitation['description']); ?></p>
+                            <p><strong>Description :</strong> <?php echo htmlspecialchars($invitation['description']); ?></p>
                         <?php endif; ?>
                         <?php if (!empty($invitation['invitee_name'])): ?>
-                            <p><strong>Invited:</strong> <?php echo htmlspecialchars($invitation['invitee_name']); ?></p>
+                            <p><strong>Invité :</strong> <?php echo htmlspecialchars($invitation['invitee_name']); ?></p>
                         <?php endif; ?>
                     </div>
                     
                     <div class="invitation-status">
-                        <p><strong>Status:</strong> 
+                        <p><strong>Statut :</strong> 
                             <span class="status <?php echo htmlspecialchars($invitation['status']); ?>">
-                                <?php echo ucfirst(htmlspecialchars($invitation['status'])); ?>
+                                <?php 
+                                    $status = htmlspecialchars($invitation['status']);
+                                    $status_fr = [
+                                        'pending' => 'En attente',
+                                        'accepted' => 'Accepté',
+                                        'declined' => 'Refusé',
+                                        'uncertain' => 'Incertain'
+                                    ];
+                                    echo $status_fr[$status] ?? ucfirst($status);
+                                ?>
                             </span>
                         </p>
                         <?php if (!empty($invitation['guest_message'])): ?>
-                            <p><strong>Your Message:</strong> <?php echo nl2br(htmlspecialchars($invitation['guest_message'])); ?></p>
+                            <p><strong>Votre message :</strong> <?php echo nl2br(htmlspecialchars($invitation['guest_message'])); ?></p>
                         <?php endif; ?>
                     </div>
                     
                     <!-- Guest list if enabled by host and guest has accepted -->
                     <?php if ($invitation['show_guest_list'] && $invitation['status'] === 'accepted'): ?>
                         <div class="guest-list-section">
-                            <h3>Other Guests Attending</h3>
+                            <h3>Autres invités présents</h3>
                             <?php
                                 $stmt = $conn->prepare("
                                     SELECT invitee_name 
@@ -270,11 +289,11 @@ if (!$project_id || !$invitation_code) {
                                 
                                 if (empty($accepted_guests)):
                             ?>
-                                <p class="empty-message">No other guests have accepted yet.</p>
+                                <p class="empty-message">Aucun autre invité n'a encore accepté.</p>
                             <?php else: ?>
                                 <ul class="guest-list">
                                     <?php foreach ($accepted_guests as $guest): ?>
-                                        <li><?php echo htmlspecialchars($guest['invitee_name'] ?: 'Guest'); ?></li>
+                                        <li><?php echo htmlspecialchars($guest['invitee_name'] ?: 'Invité'); ?></li>
                                     <?php endforeach; ?>
                                 </ul>
                             <?php endif; ?>
@@ -283,19 +302,19 @@ if (!$project_id || !$invitation_code) {
                     
                     <form method="POST" action="">
                         <div class="form-group">
-                            <label for="guest_message">Message to Host (optional):</label>
-                            <textarea id="guest_message" name="guest_message" rows="3" placeholder="Leave a message for the host..."><?php echo htmlspecialchars($invitation['guest_message'] ?? ''); ?></textarea>
+                            <label for="guest_message">Message à l'hôte (optionnel) :</label>
+                            <textarea id="guest_message" name="guest_message" rows="3" placeholder="Laissez un message à l'hôte..."><?php echo htmlspecialchars($invitation['guest_message'] ?? ''); ?></textarea>
                         </div>
                         
                         <div class="invitation-actions">
-                            <button type="submit" name="action" value="accept" class="btn btn-success">Accept</button>
-                            <button type="submit" name="action" value="uncertain" class="btn btn-warning">Maybe</button>
-                            <button type="submit" name="action" value="decline" class="btn btn-danger">Decline</button>
+                            <button type="submit" name="action" value="accept" class="btn btn-success">Accepter</button>
+                            <button type="submit" name="action" value="uncertain" class="btn btn-warning">Peut-être</button>
+                            <button type="submit" name="action" value="decline" class="btn btn-danger">Refuser</button>
                         </div>
                         
                         <?php if ($invitation['status'] !== 'pending'): ?>
                             <p class="text-center" style="margin-top: 15px; color: #666; font-size: 14px;">
-                                You can change your response at any time by clicking a different button above.
+                                Vous pouvez changer votre réponse à tout moment en cliquant sur un bouton différent ci-dessus.
                             </p>
                         <?php endif; ?>
                     </form>
@@ -304,11 +323,11 @@ if (!$project_id || !$invitation_code) {
             
             <?php if (isLoggedIn()): ?>
                 <p class="text-center">
-                    <a href="index.php">Go to My Projects</a>
+                    <a href="index.php">Aller à Mes Projets</a>
                 </p>
             <?php else: ?>
                 <p class="text-center">
-                    Want to manage your own events? <a href="register.php">Create an account</a>
+                    Vous voulez gérer vos propres événements ? <a href="register.php">Créer un compte</a>
                 </p>
             <?php endif; ?>
         </div>

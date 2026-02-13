@@ -10,11 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $confirm_password = $_POST['confirm_password'];
     
     if (empty($username) || empty($password)) {
-        $error = 'All fields are required.';
+        $error = 'Tous les champs sont requis.';
     } elseif ($password !== $confirm_password) {
-        $error = 'Passwords do not match.';
+        $error = 'Les mots de passe ne correspondent pas.';
     } elseif (strlen($password) < 8) {
-        $error = 'Password must be at least 8 characters.';
+        $error = 'Le mot de passe doit contenir au moins 8 caractères.';
     } else {
         try {
             $conn = getDBConnection();
@@ -23,29 +23,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
             $stmt->execute([$username, $hashed_password]);
             
-            $success = 'Registration successful! You can now login.';
+            $success = 'Inscription réussie ! Vous pouvez maintenant vous connecter.';
         } catch(PDOException $e) {
             if ($e->getCode() == 23000) {
-                $error = 'Username already exists.';
+                $error = 'Ce nom d\'utilisateur existe déjà.';
             } else {
-                $error = 'Registration failed. Please try again.';
+                $error = 'Inscription échouée. Veuillez réessayer.';
             }
         }
     }
 }
 ?>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Party Manager</title>
+    <title>Inscription - Gestionnaire de Fêtes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
         <div class="auth-box">
-            <h1>Register</h1>
+            <h1>Inscription</h1>
             
             <?php if ($error): ?>
                 <div class="alert alert-error"><?php echo htmlspecialchars($error); ?></div>
@@ -57,25 +57,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <form method="POST" action="">
                 <div class="form-group">
-                    <label for="username">Username:</label>
+                    <label for="username">Nom d'utilisateur :</label>
                     <input type="text" id="username" name="username" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password:</label>
+                    <label for="password">Mot de passe :</label>
                     <input type="password" id="password" name="password" required>
                 </div>
                 
                 <div class="form-group">
-                    <label for="confirm_password">Confirm Password:</label>
+                    <label for="confirm_password">Confirmer le mot de passe :</label>
                     <input type="password" id="confirm_password" name="confirm_password" required>
                 </div>
                 
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn btn-primary">S'inscrire</button>
             </form>
             
             <p class="text-center">
-                Already have an account? <a href="login.php">Login here</a>
+                Vous avez déjà un compte ? <a href="login.php">Se connecter ici</a>
             </p>
         </div>
     </div>
