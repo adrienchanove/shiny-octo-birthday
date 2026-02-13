@@ -9,7 +9,11 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 - **Project Management**: Create and manage party/birthday events
 - **Invitation System**: Generate unique invitation links for each guest
 - **Personal Invitation Links**: Each invitation has a unique code in the URL
-- **Invitation Tracking**: Track who accepted or declined invitations
+- **Guest Response Options**: Guests can respond with Accept, Decline, or Maybe (Uncertain)
+- **Guest Messages**: Guests can leave optional messages for the host
+- **Response Editing**: Guests can change their response at any time
+- **Guest List Visibility**: Hosts can optionally show the list of accepted guests to other attendees
+- **Invitation Tracking**: Track who accepted, declined, or is uncertain about invitations
 - **Responsive Design**: Works on desktop and mobile devices
 
 ## Requirements
@@ -62,7 +66,23 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    
    This is useful for resetting the database to a clean state with the latest schema.
 
-6. Start your web server and navigate to the application URL
+5. Start your web server and navigate to the application URL
+
+## Upgrading from Previous Version
+
+If you're upgrading from a previous version that doesn't include the guest response features, you need to migrate your database:
+
+```bash
+php migrate_guest_response.php
+```
+
+This will add the new fields required for:
+- Guest response options (uncertain/maybe)
+- Guest messages
+- Response editing
+- Guest list visibility
+
+The migration is safe and will not affect existing data.
 
 ## Usage
 
@@ -83,6 +103,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    - Event End Time (optional)
    - Event Location (optional)
    - Description (optional)
+   - Show guest list to attendees (optional checkbox) - When enabled, guests who accept can see who else has accepted
 4. Click "Create Project"
 
 ### Creating Invitations
@@ -104,8 +125,20 @@ Each invitation link contains:
 ### Accepting an Invitation
 1. Guest clicks on the invitation link
 2. They can see event details
-3. They can accept or decline the invitation
-4. Status is updated and visible to the project owner
+3. They can choose from three response options:
+   - **Accept**: Confirm attendance
+   - **Maybe**: Uncertain about attendance
+   - **Decline**: Cannot attend
+4. Optionally, they can leave a message for the host
+5. Status is updated and visible to the project owner
+6. Guests can change their response at any time by visiting the same link again
+
+### Guest List Feature
+When a host enables "Show guest list to attendees" for a project:
+- Guests who **accept** the invitation can see a list of other guests who have accepted
+- This helps guests know who else is attending
+- Guests with "pending", "maybe", or "declined" status cannot see the guest list
+- The host always sees all invitations and responses regardless of this setting
 
 ## File Structure
 
@@ -158,6 +191,7 @@ mysql -u root -p party_manager < database.sql
 - Session-based authentication
 - Unique invitation codes using cryptographically secure random bytes
 - Input validation and sanitization
+- XSS prevention with `htmlspecialchars()` for all user-generated content including guest messages
 
 ## Database Schema
 
@@ -178,6 +212,7 @@ mysql -u root -p party_manager < database.sql
 - `event_end_time`: End time of the event (optional)
 - `event_location`: Location of the event (optional)
 - `event_type`: 'party' or 'birthday'
+- `show_guest_list`: Boolean, whether to show accepted guests to other attendees
 - `created_at`: Project creation timestamp
 
 ### Invitations Table
@@ -185,9 +220,11 @@ mysql -u root -p party_manager < database.sql
 - `project_id`: Foreign key to projects table
 - `invitation_code`: Unique code (format: XXXX-XXXX-XXXX)
 - `invitee_name`: Name of the invitee
-- `status`: 'pending', 'accepted', or 'declined'
+- `status`: 'pending', 'accepted', 'declined', or 'uncertain'
+- `guest_message`: Optional message from the guest to the host
 - `created_at`: Invitation creation timestamp
 - `accepted_at`: Timestamp when accepted
+- `response_updated_at`: Timestamp when response was last updated
 
 ## License
 
