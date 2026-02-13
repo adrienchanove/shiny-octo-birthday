@@ -133,19 +133,17 @@ if (!$project_id || !$invitation_code) {
     <meta property="og:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
     <?php 
         if (!empty($invitation['description'])) {
-            $og_description = htmlspecialchars($invitation['description']);
+            $og_description = $invitation['description'];
         } else {
             $event_date_timestamp = strtotime($invitation['event_date']);
-            // Escape the title before concatenation to prevent XSS
-            $fallback_desc = 'Join us for ' . htmlspecialchars($invitation['title']);
+            $fallback_desc = 'Join us for ' . $invitation['title'];
             if ($event_date_timestamp !== false) {
                 $fallback_desc .= ' on ' . date('F j, Y', $event_date_timestamp);
             }
-            // Title portion was already escaped above, safe to use directly
             $og_description = $fallback_desc;
         }
     ?>
-    <meta property="og:description" content="<?php echo $og_description; ?>">
+    <meta property="og:description" content="<?php echo htmlspecialchars($og_description); ?>">
     <meta property="og:type" content="event">
     <meta property="og:url" content="<?php echo htmlspecialchars(SITE_URL . '/accept_invitation.php?project=' . $project_id . '&code=' . $invitation_code); ?>">
     <meta property="og:site_name" content="Party Manager">
@@ -174,7 +172,7 @@ if (!$project_id || !$invitation_code) {
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="You're Invited to <?php echo htmlspecialchars($invitation['title']); ?>">
-    <meta name="twitter:description" content="<?php echo $og_description; ?>">
+    <meta name="twitter:description" content="<?php echo htmlspecialchars($og_description); ?>">
     <?php endif; ?>
     
     <link rel="stylesheet" href="style.css">
