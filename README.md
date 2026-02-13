@@ -68,7 +68,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 
 ### Creating an Account
 1. Navigate to `register.php`
-2. Fill in username, email, and password
+2. Fill in username and password
 3. Click "Register"
 
 ### Creating a Project
@@ -88,9 +88,7 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 ### Creating Invitations
 1. Go to your project details page
 2. Click "Create New Invitation"
-3. Enter invitee information:
-   - Name
-   - Email (optional)
+3. Enter invitee name
 4. A unique invitation link will be generated
 5. Copy and share the invitation link with your guest
 
@@ -166,7 +164,6 @@ mysql -u root -p party_manager < database.sql
 ### Users Table
 - `id`: Primary key
 - `username`: Unique username
-- `email`: Unique email address
 - `password`: Hashed password
 - `created_at`: Account creation timestamp
 
@@ -188,7 +185,6 @@ mysql -u root -p party_manager < database.sql
 - `project_id`: Foreign key to projects table
 - `invitation_code`: Unique code (format: XXXX-XXXX-XXXX)
 - `invitee_name`: Name of the invitee
-- `invitee_email`: Email of the invitee
 - `status`: 'pending', 'accepted', or 'declined'
 - `created_at`: Invitation creation timestamp
 - `accepted_at`: Timestamp when accepted

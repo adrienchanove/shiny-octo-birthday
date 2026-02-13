@@ -54,7 +54,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 ✅ Generate unique invitation links per guest
 ✅ Invitation codes in format: XXXX-XXXX-XXXX (uppercase alphanumeric)
 ✅ Personal invitation links format: `?project=ID&code=CODE`
-✅ Track invitee name and email (optional)
+✅ Track invitee name
 ✅ Public invitation acceptance page
 ✅ Accept/Decline functionality
 ✅ Status tracking (pending/accepted/declined)
@@ -84,7 +84,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 ## Database Schema
 
 ### Users Table
-- Unique usernames and emails
+- Unique usernames
 - Hashed passwords
 - Creation timestamps
 
@@ -98,7 +98,7 @@ Complete PHP web application for managing parties and birthdays with a MySQL dat
 ### Invitations Table
 - Foreign key to projects (CASCADE delete)
 - Unique invitation codes (format: XXXX-XXXX-XXXX)
-- Optional invitee name/email
+- Invitee name
 - Status ENUM (pending/accepted/declined)
 - Acceptance timestamp
 - Indexed by project_id and invitation_code

@@ -7,7 +7,6 @@ USE party_manager;
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -34,7 +33,6 @@ CREATE TABLE IF NOT EXISTS invitations (
     project_id INT NOT NULL,
     invitation_code VARCHAR(14) UNIQUE NOT NULL,
     invitee_name VARCHAR(100),
-    invitee_email VARCHAR(100),
     status ENUM('pending', 'accepted', 'declined') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     accepted_at TIMESTAMP NULL,

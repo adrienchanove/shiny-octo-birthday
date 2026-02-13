@@ -26,7 +26,6 @@ This document provides a comprehensive testing checklist for the Party/Birthday 
 **Test Case 2.1: Successful Registration**
 - [ ] Navigate to `register.php`
 - [ ] Enter valid username (e.g., "testuser")
-- [ ] Enter valid email (e.g., "test@example.com")
 - [ ] Enter password (minimum 8 characters)
 - [ ] Enter matching confirm password
 - [ ] Click "Register"
@@ -35,7 +34,7 @@ This document provides a comprehensive testing checklist for the Party/Birthday 
 
 **Test Case 2.2: Duplicate Username**
 - [ ] Try to register with existing username
-- [ ] Verify error message about duplicate username/email
+- [ ] Verify error message about duplicate username
 
 **Test Case 2.3: Password Validation**
 - [ ] Try password less than 8 characters
@@ -45,8 +44,6 @@ This document provides a comprehensive testing checklist for the Party/Birthday 
 
 **Test Case 2.4: Empty Fields**
 - [ ] Try to submit with empty username
-- [ ] Verify error message
-- [ ] Try to submit with empty email
 - [ ] Verify error message
 - [ ] Try to submit with empty password
 - [ ] Verify error message
@@ -146,34 +143,23 @@ This document provides a comprehensive testing checklist for the Party/Birthday 
 **Test Case 7.1: Create Invitation with Name**
 - [ ] Click "Create New Invitation" on project detail page
 - [ ] Enter invitee name (e.g., "Jane Doe")
-- [ ] Leave email empty
 - [ ] Click "Create Invitation"
 - [ ] Verify redirect back to project details
 - [ ] Verify new invitation appears in list
 - [ ] Verify invitation link is displayed
 
-**Test Case 7.2: Create Invitation with Email**
-- [ ] Create another invitation
-- [ ] Leave name empty
-- [ ] Enter invitee email
-- [ ] Verify invitation is created
-
-**Test Case 7.3: Create Invitation with Both**
-- [ ] Create invitation with both name and email
-- [ ] Verify both are displayed in invitation list
-
-**Test Case 7.4: Empty Invitation**
-- [ ] Try to create invitation without name or email
+**Test Case 7.2: Empty Invitation**
+- [ ] Try to create invitation without name
 - [ ] Verify error message
 
-**Test Case 7.5: Invitation Link Format**
+**Test Case 7.3: Invitation Link Format**
 - [ ] Verify invitation link contains:
   - [ ] Correct domain (SITE_URL)
   - [ ] `accept_invitation.php` page
   - [ ] `project` parameter with correct ID
   - [ ] `code` parameter with 64-character hex string
 
-**Test Case 7.6: Copy Link Button**
+**Test Case 7.4: Copy Link Button**
 - [ ] Click "Copy" button next to invitation link
 - [ ] Verify button text changes to "Copied!"
 - [ ] Paste into notepad/browser

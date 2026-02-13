@@ -25,15 +25,14 @@ if (!$project) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $invitee_name = trim($_POST['invitee_name']);
-    $invitee_email = trim($_POST['invitee_email']);
     
-    if (empty($invitee_name) && empty($invitee_email)) {
-        $error = 'Please provide at least a name or email.';
+    if (empty($invitee_name)) {
+        $error = 'Please provide a name.';
     } else {
         try {
             $invitation_code = generateInvitationCode();
-            $stmt = $conn->prepare("INSERT INTO invitations (project_id, invitation_code, invitee_name, invitee_email) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$project_id, $invitation_code, $invitee_name, $invitee_email]);
+            $stmt = $conn->prepare("INSERT INTO invitations (project_id, invitation_code, invitee_name) VALUES (?, ?, ?)");
+            $stmt->execute([$project_id, $invitation_code, $invitee_name]);
             
             header('Location: view_project.php?id=' . $project_id);
             exit();
@@ -76,12 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <form method="POST" action="">
                 <div class="form-group">
                     <label for="invitee_name">Invitee Name:</label>
-                    <input type="text" id="invitee_name" name="invitee_name" placeholder="Enter person's name">
-                </div>
-                
-                <div class="form-group">
-                    <label for="invitee_email">Invitee Email:</label>
-                    <input type="email" id="invitee_email" name="invitee_email" placeholder="Enter person's email (optional)">
+                    <input type="text" id="invitee_name" name="invitee_name" placeholder="Enter person's name" required>
                 </div>
                 
                 <p class="note">Note: A unique invitation link will be generated. You can share this link with the invitee.</p>

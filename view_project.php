@@ -85,7 +85,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <thead>
                             <tr>
                                 <th>Invitee Name</th>
-                                <th>Email</th>
                                 <th>Status</th>
                                 <th>Invitation Link</th>
                                 <th>Created</th>
@@ -95,7 +94,6 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <?php foreach ($invitations as $invitation): ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($invitation['invitee_name'] ?: 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($invitation['invitee_email'] ?: 'N/A'); ?></td>
                                     <td>
                                         <span class="status <?php echo htmlspecialchars($invitation['status']); ?>">
                                             <?php echo ucfirst(htmlspecialchars($invitation['status'])); ?>
