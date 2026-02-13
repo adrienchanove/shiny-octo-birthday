@@ -1,5 +1,21 @@
 <?php
-// Load environment variables from .env file
+/**
+ * Load environment variables from .env file
+ * 
+ * Simple .env parser that reads KEY=VALUE pairs and loads them into $_ENV.
+ * 
+ * Features:
+ * - Supports comments (lines starting with #)
+ * - Handles quoted values (single and double quotes)
+ * - Validates key naming (alphanumeric and underscores, case-insensitive)
+ * 
+ * Limitations:
+ * - Does not handle escaped quotes within values
+ * - Does not support multi-line values
+ * - Does not validate quote matching (e.g., KEY="value' is accepted)
+ * 
+ * @param string $path Path to the .env file
+ */
 function loadEnvFile($path) {
     if (!file_exists($path)) {
         die("Error: .env file not found at $path. Please copy .env.example to .env and configure it.");
@@ -26,7 +42,6 @@ function loadEnvFile($path) {
             }
             
             // Remove quotes if present (handles both single and double quotes)
-            // Note: Does not handle escaped quotes within values
             if (strlen($value) >= 2) {
                 if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
                     (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
