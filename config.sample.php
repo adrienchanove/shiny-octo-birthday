@@ -19,7 +19,10 @@ function getDBConnection() {
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         return $conn;
     } catch(PDOException $e) {
-        die("Connection failed: " . $e->getMessage());
+        // Log the error for debugging (in production, log to a file)
+        error_log("Database connection failed: " . $e->getMessage());
+        // Show generic error to user
+        die("Connection failed. Please contact the administrator.");
     }
 }
 

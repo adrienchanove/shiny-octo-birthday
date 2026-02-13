@@ -111,14 +111,45 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <script>
     function copyLink(button) {
         const input = button.previousElementSibling;
-        input.select();
-        document.execCommand('copy');
+        const text = input.value;
         
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        setTimeout(() => {
-            button.textContent = originalText;
-        }, 2000);
+        // Use modern Clipboard API
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                input.select();
+                try {
+                    document.execCommand('copy');
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                } catch (e) {
+                    alert('Failed to copy link');
+                }
+            });
+        } else {
+            // Fallback for older browsers
+            input.select();
+            try {
+                document.execCommand('copy');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            } catch (e) {
+                alert('Failed to copy link');
+            }
+        }
     }
     </script>
 </body>

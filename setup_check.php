@@ -108,11 +108,12 @@
                     $tables = ['users', 'projects', 'invitations'];
                     $tableStatus = [];
                     foreach ($tables as $table) {
-                        $stmt = $conn->query("SHOW TABLES LIKE '$table'");
+                        $stmt = $conn->prepare("SHOW TABLES LIKE ?");
+                        $stmt->execute([$table]);
                         if ($stmt->rowCount() > 0) {
-                            $tableStatus[] = "$table ✓";
+                            $tableStatus[] = htmlspecialchars($table) . " ✓";
                         } else {
-                            $tableStatus[] = "$table ✗";
+                            $tableStatus[] = htmlspecialchars($table) . " ✗";
                         }
                     }
                     
