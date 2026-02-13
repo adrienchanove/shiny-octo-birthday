@@ -17,5 +17,8 @@ Thumbs.db
 vendor/
 composer.lock
 
+# Environment configuration
+.env
+
 # Local configuration (if users want to override)
 config.local.php

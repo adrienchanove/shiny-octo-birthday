@@ -1,12 +1,84 @@
 <?php
+/**
+ * Load environment variables from .env file
+ * 
+ * Simple .env parser that reads KEY=VALUE pairs and loads them into $_ENV.
+ * 
+ * Features:
+ * - Supports comments (lines starting with #)
+ * - Handles quoted values (single and double quotes)
+ * - Validates key naming (alphanumeric and underscores, case-insensitive)
+ * 
+ * Limitations:
+ * - Does not handle escaped quotes within values
+ * - Does not support multi-line values
+ * - Does not validate quote matching (e.g., KEY="value' is accepted)
+ * 
+ * @param string $path Path to the .env file
+ */
+function loadEnvFile($path) {
+    if (!file_exists($path)) {
+        die("Error: .env file not found at $path. Please copy .env.example to .env and configure it.");
+    }
+    
+    $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $trimmed = trim($line);
+        
+        // Skip comments and empty lines
+        if ($trimmed === '' || strpos($trimmed, '#') === 0) {
+            continue;
+        }
+        
+        // Parse KEY=VALUE format
+        if (strpos($trimmed, '=') !== false) {
+            list($key, $value) = explode('=', $trimmed, 2);
+            $key = trim($key);
+            $value = trim($value);
+            
+            // Validate key is not empty and follows naming conventions
+            if (empty($key) || !preg_match('/^[A-Z_][A-Z0-9_]*$/i', $key)) {
+                continue;
+            }
+            
+            // Remove quotes if present (handles both single and double quotes)
+            if (strlen($value) >= 2) {
+                if ((substr($value, 0, 1) === '"' && substr($value, -1) === '"') ||
+                    (substr($value, 0, 1) === "'" && substr($value, -1) === "'")) {
+                    $value = substr($value, 1, -1);
+                }
+            }
+            
+            // Set in $_ENV superglobal
+            $_ENV[$key] = $value;
+            putenv("$key=$value");
+        }
+    }
+}
+
+// Load .env file
+loadEnvFile(__DIR__ . '/.env');
+
+// Validate required environment variables
+$required = ['DB_HOST', 'DB_USER', 'DB_PASS', 'DB_NAME', 'SITE_URL'];
+$missing = [];
+foreach ($required as $var) {
+    if (!isset($_ENV[$var])) {
+        $missing[] = $var;
+    }
+}
+if (!empty($missing)) {
+    die("Error: Missing required environment variables: " . implode(', ', $missing));
+}
+
 // Database configuration
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'party_manager');
+define('DB_HOST', $_ENV['DB_HOST']);
+define('DB_USER', $_ENV['DB_USER']);
+define('DB_PASS', $_ENV['DB_PASS']);
+define('DB_NAME', $_ENV['DB_NAME']);
 
 // Site configuration
-define('SITE_URL', 'http://localhost');
+define('SITE_URL', $_ENV['SITE_URL']);
 
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
