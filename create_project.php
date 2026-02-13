@@ -14,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $event_end_time = !empty($_POST['event_end_time']) ? $_POST['event_end_time'] : null;
     $event_location = !empty(trim($_POST['event_location'])) ? trim($_POST['event_location']) : null;
     $event_type = $_POST['event_type'];
+    $show_guest_list = isset($_POST['show_guest_list']) ? 1 : 0;
     
     if (empty($title) || empty($event_date) || empty($event_type)) {
         $error = 'Title, date, and event type are required.';
@@ -24,8 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         try {
             $conn = getDBConnection();
-            $stmt = $conn->prepare("INSERT INTO projects (user_id, title, description, event_date, event_time, event_end_date, event_end_time, event_location, event_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([getCurrentUserId(), $title, $description, $event_date, $event_time, $event_end_date, $event_end_time, $event_location, $event_type]);
+            $stmt = $conn->prepare("INSERT INTO projects (user_id, title, description, event_date, event_time, event_end_date, event_end_time, event_location, event_type, show_guest_list) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([getCurrentUserId(), $title, $description, $event_date, $event_time, $event_end_date, $event_end_time, $event_location, $event_type, $show_guest_list]);
             
             $project_id = $conn->lastInsertId();
             header('Location: view_project.php?id=' . $project_id);
@@ -108,6 +109,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="form-group">
                     <label for="description">Description:</label>
                     <textarea id="description" name="description" rows="4"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="checkbox" id="show_guest_list" name="show_guest_list" style="margin-right: 10px; width: auto;">
+                        <span>Show guest list to attendees (guests can see who else has accepted)</span>
+                    </label>
                 </div>
                 
                 <div class="form-actions">
