@@ -7,20 +7,17 @@ $invitation_code = isset($_GET['code']) ? $_GET['code'] : '';
 
 // Check if manual code entry was submitted
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['manual_code'])) {
-    $invitation_code = trim($_POST['manual_code']);
-    $project_id_from_form = isset($_POST['project_id']) ? intval($_POST['project_id']) : 0;
+    $invitation_code = strtoupper(trim($_POST['manual_code']));
     
-    // If we have both code and project_id, redirect with them
-    if ($project_id_from_form && $invitation_code) {
-        header("Location: accept_invitation.php?project=" . $project_id_from_form . "&code=" . urlencode($invitation_code));
-        exit;
-    }
-    // If only code provided, look up the project_id
-    elseif ($invitation_code) {
+    // Validate code format before processing (format: XXXX-XXXX-XXXX)
+    if (preg_match('/^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$/', $invitation_code)) {
+        // Always look up project_id from database for security
+        // This prevents manipulation of the hidden project_id field
         $conn = getDBConnection();
         $stmt = $conn->prepare("SELECT project_id FROM invitations WHERE invitation_code = ?");
         $stmt->execute([$invitation_code]);
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        
         if ($result) {
             header("Location: accept_invitation.php?project=" . $result['project_id'] . "&code=" . urlencode($invitation_code));
             exit;
@@ -28,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['manual_code'])) {
             // Code not found, continue with error display
             $project_id = 0;
         }
+    } else {
+        // Invalid code format, continue with error display
+        $project_id = 0;
+        $invitation_code = '';
     }
 }
 
@@ -123,7 +124,6 @@ if (!$project_id || !$invitation_code) {
                         If you have an invitation code, please enter it below:
                     </p>
                     <form method="POST" action="">
-                        <input type="hidden" name="project_id" value="<?php echo htmlspecialchars($project_id); ?>">
                         <div class="form-group">
                             <label for="manual_code">Invitation Code (Format: XXXX-XXXX-XXXX)</label>
                             <input 
