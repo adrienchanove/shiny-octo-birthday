@@ -37,6 +37,13 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
    ```bash
    mysql -u root -p party_manager < database.sql
    ```
+   
+   **Alternative: Use the database reset script** (drops and recreates the database):
+   ```bash
+   php reset_database.php
+   ```
+   
+   This is useful for resetting the database to a clean state with the latest schema.
 
 4. Configure the database connection:
    - Open `config.php`
@@ -65,9 +72,13 @@ A PHP web-based application to manage parties and birthdays with MySQL database.
 1. Log in to your account
 2. Click "Create Project"
 3. Enter project details:
-   - Title
-   - Event Type (Party or Birthday)
-   - Event Date
+   - Title (required)
+   - Event Type (Party or Birthday) (required)
+   - Event Date (required)
+   - Event Time (optional)
+   - Event End Date (optional)
+   - Event End Time (optional)
+   - Event Location (optional)
    - Description (optional)
 4. Click "Create Project"
 
@@ -100,6 +111,7 @@ Each invitation link contains:
 ```
 ├── config.php              # Database configuration and utility functions
 ├── database.sql            # Database schema
+├── reset_database.php      # Console command to reset/recreate database
 ├── register.php            # User registration page
 ├── login.php              # User login page
 ├── logout.php             # Logout functionality
@@ -111,6 +123,31 @@ Each invitation link contains:
 ├── style.css              # Application styles
 └── README.md              # This file
 ```
+
+## Database Management
+
+### Resetting the Database
+
+To reset the database and recreate it with the latest schema, use the provided console command:
+
+```bash
+php reset_database.php
+```
+
+This script will:
+- Drop the existing database (if it exists)
+- Create a new database
+- Execute all statements from `database.sql`
+- Verify the tables were created successfully
+
+**Warning**: This will delete all existing data! The script will ask for confirmation before proceeding.
+
+You can also manually reset the database:
+```bash
+mysql -u root -p -e "DROP DATABASE IF EXISTS party_manager; CREATE DATABASE party_manager;"
+mysql -u root -p party_manager < database.sql
+```
+
 
 ## Security Features
 
@@ -135,6 +172,10 @@ Each invitation link contains:
 - `title`: Project title
 - `description`: Project description
 - `event_date`: Date of the event
+- `event_time`: Time of the event (optional)
+- `event_end_date`: End date of the event (optional)
+- `event_end_time`: End time of the event (optional)
+- `event_location`: Location of the event (optional)
 - `event_type`: 'party' or 'birthday'
 - `created_at`: Project creation timestamp
 

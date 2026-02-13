@@ -58,6 +58,18 @@ $invitations = $stmt->fetchAll(PDO::FETCH_ASSOC);
             
             <div class="project-info">
                 <p><strong>Event Date:</strong> <?php echo date('F j, Y', strtotime($project['event_date'])); ?></p>
+                <?php if (!empty($project['event_time'])): ?>
+                    <p><strong>Event Time:</strong> <?php echo date('g:i A', strtotime($project['event_time'])); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($project['event_end_date'])): ?>
+                    <p><strong>Event End Date:</strong> <?php echo date('F j, Y', strtotime($project['event_end_date'])); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($project['event_end_time'])): ?>
+                    <p><strong>Event End Time:</strong> <?php echo date('g:i A', strtotime($project['event_end_time'])); ?></p>
+                <?php endif; ?>
+                <?php if (!empty($project['event_location'])): ?>
+                    <p><strong>Location:</strong> <?php echo htmlspecialchars($project['event_location']); ?></p>
+                <?php endif; ?>
                 <p><strong>Description:</strong> <?php echo htmlspecialchars($project['description']); ?></p>
                 <p><strong>Created:</strong> <?php echo date('F j, Y', strtotime($project['created_at'])); ?></p>
             </div>
